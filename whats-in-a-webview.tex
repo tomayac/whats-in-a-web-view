@@ -211,13 +211,15 @@ and present and discuss our results in \autoref{sec:results-and-discussion}.
 We close the paper with an outlook on future work in \autoref{sec:future-work}
 and draw some conclusions in \autoref{sec:conclusions}.
 
-\section{Background}
+\section{Background on Web Views}
 \label{sec:background}
 
 There are many different ways to integrate Web content in native applications,
 each having their own benefits and drawbacks.
-In the following, we briefly compare the various options on the two popular
+In the following, we describe the options on the two popular
 mobile operating system Android and i\textsc{os}.
+At time of writing, Safari on i\textsc{os} does not support Service Workers yet.
+For the sake of completeness, we nevertheless describe the Web View situation there as well.
 
 \subsection{The situation on Android}
 
@@ -265,7 +267,7 @@ to sites they are already connected to, or re-grant permissions they have alread
 
 Chrome Custom Tabs solved many issues of Android Web Views,
 however, had the drawback of not being available in a~fullscreen variant like Web Views.
-Trusted Web Activities~\cite{googledevelopers2017twa} are a~new way to
+As of October 2017, Trusted Web Activities~\cite{googledevelopers2017twa} are a~new way to
 integrate Web app content such as \textsc{pwa}s with Android apps.
 They can be instantiated with a~\texttt{TwaSessionHelper}
 and use a~protocol based on Chrome Custom Tabs.
@@ -285,12 +287,49 @@ which is designed to be a~baseline of interactivity and performance.
 
 \subsection{The situation on i\textsc{os}}
 
-Similar to Android, on i\textsc{os} as well 
+\paragraph{i\textsc{os} Web Views with \texttt{UIWebView}}
+
+Similar to Android, on i\textsc{os} as well Web content could be embedded with
+a~simple system-level Web View called \texttt{UIWebView}.\footnote{\texttt{UIWebView}:
+\url{https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/}}
+With the release of i\textsc{os}~4.3 in early 2011, Apple introduced Nitro,
+a~faster, just-in-time (\textsc{jit}) JavaScript engine for Safari
+that considerably sped up the browser's performance in loading complex Web pages.
+Nitro was exclusive to Safari: third-party developers could not benefit
+from the faster performance in their Web views based on \texttt{UIWebView},
+which was widely considered a~calculated move to encourage usage of Safari
+over Web Views and Web apps saved to the iPhone's home screen~\cite{viticci2015safari}.
+
+\paragraph{i\textsc{os} Web Views with \texttt{WKWebView}}
+
+In June 2014, Apple announced \texttt{WKWebView},\footnote{\texttt{WKWebView}:
+\url{https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/}}
+a~new API that would allow developers
+to display Web content in custom Web Views with the same performance benefits of Safari.
+Designed with security in mind, \texttt{WKWebView} featured the same Nitro engine of Safari,
+while still allowing developers to customize the experience
+with their own user interface and features.
+
+\paragraph{i\textsc{os} Web Views with \texttt{SFSafariViewController}}
+
+In September 2015 with the release of i\textsc{os}~9, Apple introduced a~new Web View called
+\texttt{SFSafariViewController}\footnote{\texttt{SFSafariViewController}:
+\url{https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller}},
+which enables apps to delegate the responsibility of showing web content to Safari itself,
+avoiding the need to write custom code for built-in browsers.
+Safari View Controller shares cookies and website data with Safari,
+which means that if a~user is already logged into a~specific website in Safari
+and a~link to that website is opened in Safari View Controller,
+the user will already be logged in.
+
+\section{\textsc{pwa} Feature Detector}
+\label{sec:pwa-feature-detector}
 
 \subsection{Progressive Web App Features}
 
-\section{Progressive Web App Feature Detector}
-\label{sec:pwa-feature-detector}
+\subsection{Feature-Detecting Various Features}
+
+\subsection{Implementation Details}
 
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
