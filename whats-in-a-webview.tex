@@ -50,7 +50,9 @@
 
 
 \begin{document}
-\title[What is in a~Web View?]{What is in a~Web View? An Analysis of Progressive Web App Features When the Means of Web Access is not a~Web Browser}  
+\title[What is in a~Web View?]{What is in a~Web View?
+An Analysis of Progressive Web App Features
+When the Means of Web Access is not a~Web Browser}  
 
 % \titlenote{}
 % \subtitle{}
@@ -221,7 +223,7 @@ mobile operating system Android and i\textsc{os}.
 At time of writing, Safari on i\textsc{os} does not support Service Workers yet.
 For the sake of completeness, we nevertheless describe the Web View situation there as well.
 
-\subsection{The situation on Android}
+\subsection{The Situation on Android}
 
 \paragraph{Android Web Views with \texttt{WebView}}
 
@@ -285,7 +287,7 @@ will ultimately need to meet content requirements
 similar to the ``improved add to home screen`` flow~\cite{kinlan2017a2hs},
 which is designed to be a~baseline of interactivity and performance.
 
-\subsection{The situation on i\textsc{os}}
+\subsection{The Situation on i\textsc{os}}
 
 \paragraph{i\textsc{os} Web Views with \texttt{UIWebView}}
 
@@ -309,23 +311,109 @@ to display Web content in custom Web Views with the same performance benefits of
 Designed with security in mind, \texttt{WKWebView} featured the same Nitro engine of Safari,
 while still allowing developers to customize the experience
 with their own user interface and features.
+Due to Apple's App Store restrictions, third-party browsers on i\textsc{os}
+internally need to depend on \texttt{WKWebView}, documented,
+\emph{e.g.},\ for Edge for i\textsc{os}~\cite{lyndersay2017edge}
+or Chrome for i\textsc{os}~\cite{chromiumblog2016chrome}.
 
 \paragraph{i\textsc{os} Web Views with \texttt{SFSafariViewController}}
 
 In September 2015 with the release of i\textsc{os}~9, Apple introduced a~new Web View called
 \texttt{SFSafariViewController}\footnote{\texttt{SFSafariViewController}:
 \url{https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller}},
-which enables apps to delegate the responsibility of showing web content to Safari itself,
+which enables apps to delegate the responsibility of showing Web content to Safari itself,
 avoiding the need to write custom code for built-in browsers.
-Safari View Controller shares cookies and website data with Safari,
-which means that if a~user is already logged into a~specific website in Safari
-and a~link to that website is opened in Safari View Controller,
-the user will already be logged in.
+Up until i\textsc{os}~10, Safari View Controller shared cookies and website data with Safari,
+which means that if a~user was already logged into a~specific website in Safari
+and a~link to that website was opened in Safari View Controller,
+the user was already logged in.
+As of i\textsc{os}~11, cookie and website data is no longer shared,
+but developers can leverage
+an \texttt{SFAuthenticationSession}\footnote{\texttt{SFAuthenticationSession}:
+\url{https://developer.apple.com/documentation/safariservices/sfauthenticationsession}}
+that shares data upon user consent. 
+
+\subsection{Parallelisms on the Two Operating Systems}
+
+The development on the two operating systems has certain parallels
+that can be summarized as follows.
+From the initially slow and gradually improved simple Web Views \texttt{WebView}
+(with the transparent internal switch from WebKit to Chromium)
+on Android and \texttt{UIWebView} and \texttt{WKWebView} on i\textsc{os},
+there was an evolution to more powerful and better integrated browser tab experiences,
+namely \texttt{CustomTabsIntent} on Android and
+\texttt{SFSafariViewController} on i\textsc{os},
+which both (only upon user consent since i\textsc{os}~11)
+share cookies, permissions, \emph{etc.}
+with the particular system's main browser.
+Android's \texttt{TwaSessionHelper} so far has no i\textsc{os} equivalent yet.
 
 \section{\textsc{pwa} Feature Detector}
 \label{sec:pwa-feature-detector}
 
+What exactly makes a~Web app a~\emph{Progressive} Web App is not clearly defined.
+One of the most open definitions comes from Samsung~\cite{samsung2017pwa},
+maker of the Samsung Internet browser (emphasis ours):
+``Progressive Web Apps (\textsc{pwa}s) are regular mobile and desktop web applications
+that are accessible in any web browser.
+In browsers that support new open web standards [\ldots]
+they \emph{can} provide additional capabilities
+including offline support and push notifications.''
+However, just like with Ajax~\cite{garret2005ajax}, the term \textsc{pwa}
+became a~catch-all umbrella brand for Web apps
+that in some way or the other use Service Worker \textsc{api}s,
+feel (native) ``app-like,'' use latest browser features if they are available
+(Progressive Enhancement~\cite{champeon2003progressiveenhancement}),
+or that can be installed (added) to the home screen.
+Russell~\cite{russell2016pwa} lists a~number of requirements 
+for what he calls ``baseline appyness'':
+``A~Progressive Web App is functionally defined by the technical properties
+that allow the browser to detect that the site meets certain criteria
+and is worthy of being added to the homescreen.
+These criteria are motivated by user-experience concerns.
+Apps on the homescreen:
+
 \subsection{Progressive Web App Features}
+
+\begin{enumerate}
+  \item Should load instantly, regardless of network state.
+    This isn't to say that they need to function fully offline,
+    but they must put their own UI on screen without requiring a network round trip.
+  \item Should be tied in the user's mind to where they came from.
+    The brand or site behind the app shouldn't be a mystery.
+  \item Can run without extra browser chrome (\emph{e.g.},\ the \textsc{url} bar).
+    This is a~potentially dangerous permission.
+    To prevent hijacking by captive portals (and worse),
+    apps must be loaded over \textsc{tls} connections.''
+\end{enumerate}
+
+Translated to technical terms, Russell's definition implies that \textsc{pwa}s must:
+
+\begin{enumerate}
+  \item ``Originate from a Secure Origin.
+    Served over TLS and green padlock displays (no active mixed content).
+  \item Load while offline (even if only a custom offline page).
+    By implication, this means that Progressive Web Apps require Service Workers.
+  \item Reference a~Web App Manifest [\ldots]''
+\end{enumerate}
+
+
+%
+%     'Offline Capabilities': 'caches' in win,
+%      'Push Notifications': 'pushManager' in registration,
+%      'Add to Home Screen': 'BeforeInstallPromptEvent' in win,
+%      'Background Sync': 'sync' in registration,
+%      'Navigation Preload': 'navigationPreload' in registration,
+%      'Budget API': 'budget' in nav && 'reserve' in nav.budget,
+%      'Storage Estimation': 'storage' in nav && 'estimate' in nav.storage,
+%      'Persistent Storage': 'storage' in nav && 'persist' in nav.storage,
+%      'Web Share': 'share' in nav,
+%      'Media Session': 'mediaSession' in nav,
+%      'Media Capabilities': 'mediaCapabilities' in nav,
+%      'Device Memory': 'deviceMemory' in nav,
+%      'Getting Installed Related Apps': 'getInstalledRelatedApps' in nav,
+%      'Payment Request': 'PaymentRequest' in win,
+%      'Credential Management': 'credentials' in nav,
 
 \subsection{Feature-Detecting Various Features}
 
