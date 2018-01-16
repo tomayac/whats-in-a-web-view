@@ -11,6 +11,42 @@
 \usepackage{textcomp}
 \usepackage{gensymb}
 \usepackage[super]{nth}
+
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, then, catch, switch, var, const, let, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=JavaScript,
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
 % todo macro
 \usepackage{color}
 \newcommand{\todo}[1]{\noindent\textcolor{red}{{\bf \{TODO}: #1{\bf \}}}}
@@ -223,7 +259,7 @@ mobile operating system Android and i\textsc{os}.
 At time of writing, Safari on i\textsc{os} does not support Service Workers yet.
 For the sake of completeness, we nevertheless describe the Web View situation there as well.
 
-\subsection{The Situation on Android}
+\subsection{Web Views on Android}
 
 \paragraph{Android Web Views with \texttt{WebView}}
 
@@ -287,7 +323,7 @@ will ultimately need to meet content requirements
 similar to the ``improved add to home screen`` flow~\cite{kinlan2017a2hs},
 which is designed to be a~baseline of interactivity and performance.
 
-\subsection{The Situation on i\textsc{os}}
+\subsection{Web Views on i\textsc{os}}
 
 \paragraph{i\textsc{os} Web Views with \texttt{UIWebView}}
 
@@ -348,17 +384,17 @@ share cookies, permissions, \emph{etc.}
 with the particular system's main browser.
 Android's \texttt{TwaSessionHelper} so far has no i\textsc{os} equivalent yet.
 
-\section{\textsc{pwa} Feature Detector}
+\section{Detecting \textsc{pwa} Features}
 \label{sec:pwa-feature-detector}
 
 What exactly makes a~Web app a~\emph{Progressive} Web App is not clearly defined.
 One of the most open definitions comes from Samsung~\cite{samsung2017pwa},
-maker of the Samsung Internet browser (emphasis ours):
+maker of the Samsung Internet browser:
 ``Progressive Web Apps (\textsc{pwa}s) are regular mobile and desktop web applications
 that are accessible in any web browser.
 In browsers that support new open web standards [\ldots]
 they \emph{can} provide additional capabilities
-including offline support and push notifications.''
+including offline support and push notifications'' (emphasis ours).
 However, just like with Ajax~\cite{garret2005ajax}, the term \textsc{pwa}
 became a~catch-all umbrella brand for Web apps
 that in some way or the other use Service Worker \textsc{api}s,
@@ -373,48 +409,148 @@ and is worthy of being added to the homescreen.
 These criteria are motivated by user-experience concerns.
 Apps on the homescreen:
 
-\subsection{Progressive Web App Features}
-
-\begin{enumerate}
+\begin{itemize}
   \item Should load instantly, regardless of network state.
-    This isn't to say that they need to function fully offline,
+    [T]hey [don't] need to function fully offline,
     but they must put their own UI on screen without requiring a network round trip.
   \item Should be tied in the user's mind to where they came from.
     The brand or site behind the app shouldn't be a mystery.
   \item Can run without extra browser chrome (\emph{e.g.},\ the \textsc{url} bar).
-    This is a~potentially dangerous permission.
-    To prevent hijacking by captive portals (and worse),
+    [\ldots] To prevent hijacking by captive portals (and worse),
     apps must be loaded over \textsc{tls} connections.''
-\end{enumerate}
+\end{itemize}
 
-Translated to technical terms, Russell's definition implies that \textsc{pwa}s must:
+In continuation, Russell translates these requirements into more technical terms,
+writing that \textsc{pwa}s must:
 
-\begin{enumerate}
+\begin{itemize}
   \item ``Originate from a Secure Origin.
-    Served over TLS and green padlock displays (no active mixed content).
+    Served over \textsc{tls} and green padlock displays (no active mixed content).
   \item Load while offline (even if only a custom offline page).
     By implication, this means that Progressive Web Apps require Service Workers.
   \item Reference a~Web App Manifest [\ldots]''
-\end{enumerate}
+\end{itemize}
 
+For our study, we consider a~``\textsc{pwa} feature'' any feature that requires 
+one or more of the Service Worker \textsc{api}s.
+Additionally, if (if and only if) the Web View implements Service Workers,
+we consider some more recent browser \textsc{api}s,
+detailed in the following.
 
-%
-%     'Offline Capabilities': 'caches' in win,
-%      'Push Notifications': 'pushManager' in registration,
-%      'Add to Home Screen': 'BeforeInstallPromptEvent' in win,
-%      'Background Sync': 'sync' in registration,
-%      'Navigation Preload': 'navigationPreload' in registration,
-%      'Budget API': 'budget' in nav && 'reserve' in nav.budget,
-%      'Storage Estimation': 'storage' in nav && 'estimate' in nav.storage,
-%      'Persistent Storage': 'storage' in nav && 'persist' in nav.storage,
-%      'Web Share': 'share' in nav,
-%      'Media Session': 'mediaSession' in nav,
-%      'Media Capabilities': 'mediaCapabilities' in nav,
-%      'Device Memory': 'deviceMemory' in nav,
-%      'Getting Installed Related Apps': 'getInstalledRelatedApps' in nav,
-%      'Payment Request': 'PaymentRequest' in win,
-%      'Credential Management': 'credentials' in nav,
+\subsection{Progressive Web App Features}
 
+A~\texttt{ServiceWorker} is installed by calling the registration method
+on the \texttt{navigator} object, the first parameter is obligatory
+and contains a~\textsc{url} that points to a~JavaScript file with the Service Worker logic.
+The result of this promise-based \textsc{api} in the success case is then
+a~\texttt{ServiceWorkerRegistration} object,
+which is either newly created if there was no previous \texttt{ServiceWorker},
+or updated in the alternative case
+where a~previous \texttt{ServiceWorker} existed~\cite{russell2017serviceworkers}.
+In order to detect if a~given Web View supports \textsc{pwa} features at all,
+we can thus make a simple existence check for the \textsc{api},
+and then try to register a~Service Worker, as outlined in \autoref{code:sw-supported}.
+If the Web View supports Service Workers, we look at the following \textsc{pwa} features.
+
+\begin{lstlisting}[caption={Checking for Service Worker support.},
+  label=code:sw-supported, language=JavaScript, float=htb] 
+  if ('serviceWorker' in navigator) { 
+    navigator.serviceWorker.register(scriptURL, options)
+    .then(registration => {
+      console.log(registration);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  } else {
+    console.log('Service Workers not supported');
+  }
+\end{lstlisting}
+
+\begin{description}
+  \itemsep0em 
+  \item[Offline Capabilities] The ability to still load and work
+    at least to some extent, even when the device is offline, for example,
+    when it is in airplane mode or currently has no network~\cite{russell2017serviceworkers}.
+  \item[Push Notifications] The capability to display push notifications as defined in
+    the Push \textsc{api}~\cite{beverloo2017pushapi}, for example,
+    to point users to fresh content, even when the app is not running.
+  \item[Add to Home Screen] The capability to be installed (added) to a~device's home screen
+    for easy access as outlined in~\cite{kinlan2017a2hs}.
+  \item[Background Sync] The capability to synchronize data in the background,
+    for example, to send messages in a~deferred way
+    after an offline situation in a~chat app~\cite{russell2017serviceworkers}.
+  \item[Navigation Preload] The capability to start network navigation requests
+    even while the Service Worker has not booted yet~\cite{archibald2017navigationpreload},
+    which would else be a~blocking operation.
+  \item[Silent Push] The capability to use the Web Budget \cite{beverloo2017budgetapi}
+    in order to determine if potentially expensive operations should be started
+    following a~silent push notification.
+  \item[Storage Estimation] The capability to estimate the available storage
+    an application already uses and the available quota enforced by the
+    browser~\cite{vankesteren2018storage}.
+  \item[Persistent Storage] The capability to persistently store data
+    that is guaranteed not to be purged by the browser without user consent,
+    even if memory is running out~\cite{vankesteren2018storage}.
+  \item[Web Share] The capability to invoke the native sharing widgets
+    of the browser, as defined in the Web Share \textsc{api}~\cite{giuca2017webshare}.
+  \item[Media Session] The capability to show customized media metadata
+    on the platform user interface, customize available platform media controls,
+    and access platform media keys found in notification areas
+    and on lock screens of mobile devices
+    as defined in the Media Session standard~\cite{lamouri2017mediasessionapi}.
+  \item[Media Capabilities] The ability to make an optimal decision
+    when picking media content for the user by exposing information
+    about the decoding and encoding capabilities for a given format,
+    but also output capabilities to find the best match based on the device's display
+    as defined in Media Capabilities standard~\cite{lamouri2017mediacapabilities}.
+  \item[Device Memory] The capability to read the amount of available
+    Random Access Memory (\textsc{ram}) in Gigabyte
+    of a~device in order to allow servers to customize the app experience
+    based on the available memory~\cite{panicker2017devicememory}.
+  \item[Getting Installed Related Apps] The capability to detect if a~corresponding
+    native application is installed alongside the \textsc{pwa} in order to,
+    for example, not show push notifications twice on both apps~\cite{kinlan2017relatedapps}.
+  \item[Payment Request] The capability to act as intermediary among merchants,
+    users, and payment methods by means of a~standardized payment communication flow
+    that supports different secure payment methods~\cite{bateman2017paymentrequest}.
+  \item[Credential Management] The capability to request a user's credentials
+    from the browser, and to help the browser correctly store user credentials
+    for future use~\cite{west2017credentialmanagement}.
+\end{description} 
+
+\begin{lstlisting}[caption={Feature detection of various \textsc{pwa} features.},
+  label=code:feature-detection, language=JavaScript, float=htb] 
+  // nav ==> navigator
+  // win ==> window
+  // doc ==> document
+  // reg ==> ServiceWorkerRegistration
+  const detectFeatures = (reg) => {
+    return {
+      'Offline Capabilities': 'caches' in win,
+      'Push Notifications': 'pushManager' in reg,
+      'Add to Home Screen': doc.createElement('link')
+          .relList.supports('manifest'),
+      'Background Sync': 'sync' in reg,
+      'Navigation Preload': 'navigationPreload' in reg,
+      'Silent Push': 'budget' in nav &&
+          'reserve' in nav.budget,
+      'Storage Estimation': 'storage' in nav &&
+          'estimate' in nav.storage,
+      'Persistent Storage': 'storage' in nav &&
+          'persist' in nav.storage,
+      'Web Share': 'share' in nav,
+      'Media Session': 'mediaSession' in nav,
+      'Media Capabilities': 'mediaCapabilities' in nav,
+      'Device Memory': 'deviceMemory' in nav,
+      'Getting Installed Related Apps':
+          'getInstalledRelatedApps' in nav,
+      'Payment Request': 'PaymentRequest' in win,
+      'Credential Management': 'credentials' in nav,
+    };
+  };    
+\end{lstlisting}  
+  
 \subsection{Feature-Detecting Various Features}
 
 \subsection{Implementation Details}
