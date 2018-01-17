@@ -127,7 +127,8 @@ Progressive Web Apps (\textsc{pwa}) are a~new class of Web applications,
 enabled for the most part by the Service Workers \textsc{api}s.
 Service Workers allow apps to \emph{work offline}
 by intercepting network requests to deliver programmatic or cached responses,
-they can receive \emph{push notifications} and \emph{synchronize} data in the background
+Service Workers can receive \emph{push notifications}
+and \emph{synchronize} data in the background
 even when the app is not running,
 and---together with Web App Manifests---allow users to \emph{install \textsc{pwa}s}
 to their devices' home screens.
@@ -136,14 +137,22 @@ stand-alone Web browsers---among them (but not limited to)
 Chrome and its open-source foundation Chromium, Firefox, Edge, Opera,
 \textsc{uc}~Browser, Samsung Internet, as well as preview versions of Safari.
 In this paper, we examine the \textsc{pwa} feature support situation in \emph{Web Views},
-that is,\ \emph{in-app Web experiences} that are \emph{not} stand-alone browsers.
+that is,\ \emph{in-app Web experiences} that are explicitly \emph{not} stand-alone browsers.
 Such in-app browsers can commonly be encountered in chat applications like WeChat or WhatsApp,
-online social networks like Facebook or Twitter, but also email clients like Gmail.
+online social networks like Facebook or Twitter, but also email clients like Gmail,
+or simply anywhere where Web content is displayed inside native apps.
 We have developed an open-source application called \emph{\textsc{pwa} Feature Detector}
-that allows for easily testing in-app browsers (and obviously stand-alone browsers on top)
-and check for the available \textsc{pwa} features.
-The results help developers make educated choices when it comes to determining
-whether a~\textsc{pwa} is the right approach given their users' target means of Web access.
+that allows for easily testing in-app browsers (and naturally stand-alone browsers as well)
+and have evaluated the level of support for \textsc{pwa} features
+on different devices and Web Views.
+On the one hand, our results show that there are big differences
+between the various Web View technologies
+and the browser engines they are based upon,
+but on the other hand, that the results
+are independent from the devices' operating systems,
+which is good news given the problematic update policy of many device manufacturers.
+These findings help developers make educated choices when it comes to determining
+whether a~\textsc{pwa} is the right approach given their target users' means of Web access.
 \end{abstract}
 
 %
@@ -578,7 +587,6 @@ purely serve for code minification.
 
 \subsection{Implementation Details}
 
-
 We have developed an open-source application called \emph{\textsc{pwa} Feature Detector}
 that allows for easily testing in-app browsers (and obviously stand-alone browsers on top)
 and check for the available \textsc{pwa} features.
@@ -609,7 +617,7 @@ running on Android~8.1.99 in WeChat in a~Web View based on Chrome~65.
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
 
-
+We have 
 
 Table \ref{table:webview}
 Table \ref{table:customtab}
