@@ -182,12 +182,12 @@ a~process that eventually led Garrett to coin the term \emph{Ajax}
 (Asynchronous JavaScript and XML~\cite{garret2005ajax}) to describe this shift.
 Despite an early push for Web-based apps on devices such as the 2007 iPhone,
 attempts at Web apps mostly failed by comparison to native apps
-that were distributed through app stores rather than the Web.
+that are distributed through app stores rather than the Web.
 Native apps not only had direct hardware access to, \emph{e.g.},\ camera and microphone,
 to various sensors like accelerometer or geolocation, but also just in general provided
-a~better user experience and booted faster compared to having to load in a~browser at runtime.
+a~better user experience and booted faster, compared to having to load in a~browser at runtime.
 Additionally, advanced offline support and push notifications were simply unthinkable
-for Web applications at the time, and Web app icons
+for Web applications of the epoch, and Web app icons
 that already could be added to devices' home screens
 were mostly just bookmarks with---apart from full screen mode---no special behavior.
 While straightforward offline scenarios could be realized with
@@ -225,13 +225,16 @@ running in the Google Chrome browser on Android.
 \subsection{Research Question and Paper Structure}
 
 In this paper, we look at a~special means for accessing \textsc{pwa}s,
-namely accessing them \emph{not} through stand-alone browsers like the ones listed above,
+namely accessing them explicitly \emph{not} through stand-alone browsers
+like the ones listed above,
 but through \emph{in-app browsers} that render Web content in the context of native applications.
 Examples of such applications with in-app browsers are chat apps like WeChat (Wēixìn) or WhatsApp,
-online social networks like Facebook or Twitter, but also email clients like Gmail.
+online social networks like Facebook or Twitter, but also email clients like Gmail,
+or simply anywhere where Web content is displayed inside native apps.
 The technology that these applications leverage internally are so-called \emph{Web Views}.
 In order to understand why this presents an interesting research problem,
-one needs to first understand the role that applications like WeChat play in markets like China.
+one needs to first understand the role that applications like WeChat
+and thus Web Views play in markets like China.
 Chan writes in an article~\cite{chan2015wechat} for the venture capital firm Andreessen Horowitz:
 ``Millions (note, not just thousands) of lightweight apps live inside WeChat,
 much like webpages live on the internet.
@@ -239,7 +242,7 @@ much like webpages live on the internet.
 a~mobile operating system---complete with its own proprietary app store.
 The lightweight apps on WeChat are called `official accounts'.
 Approved by WeChat after a~brief application process,
-there are well over 10 million of these official accounts on the platform---ranging
+there are well over 10~million of these official accounts on the platform---ranging
 from celebrities, banks, media outlets, and fashion brands to hospitals, drug stores,
 car manufacturers, internet startups, personal blogs, and more''.
 Chan goes on: ``WeChat focuses on taking care of the plumbing---overseeing
@@ -247,21 +250,24 @@ the integration of such pre-existing services into its portal---by
 simply linking users from the wallet menu to webpages from within the app.
 It's yet another way in which \emph{WeChat
 becomes an integrated browser for the mobile (and web) world}''.
-It is to be noted that this development comes to the detriment of the so-called open Web.
+It is to be noted that this development comes to the detriment of the so-called Open Web.
 As Yang and Yang write in the Financial Times~\cite{yang2017tencent}:
 ``[WeChat's] news feed and search tools pull content only from within WeChat's walls
 rather than from the open web, including updates posted by individual users called moments,
 corporate accounts and an immense collection of WeChat accounts
 which are used by newspapers and independent bloggers''.
-While personally we are advocates of the open Web,
-we therefore examine the implications of an in-app closed Web experience
-and what this means for \textsc{pwa}. 
+While personally we do not embrace this development
+and are advocates of the open Web,
+we nevertheless examine the implications of an in-app closed Web experience
+and its impact on \textsc{pwa}s. 
 
 In the remainder of this paper, we first look at the technical background of Web Views
-and describe the \textsc{pwa} features and their underlying \textsc{api}s in \autoref{sec:background},
-introduce our application \emph{\textsc{pwa} Feature Detector} in \autoref{sec:pwa-feature-detector},
-and present and discuss our results in \autoref{sec:results-and-discussion}.
-We close the paper with an outlook on future work in \autoref{sec:future-work}
+on both Android and i\textsc{os} in \autoref{sec:background}.
+We then describe the examined \textsc{pwa} features and their underlying \textsc{api}s
+in \autoref{sec:pwa-feature-detector}, in which we also introduce
+our application \emph{\textsc{pwa} Feature Detector}.
+In continuation, we present and discuss our results in \autoref{sec:results-and-discussion}.
+We close the paper with an outlook on future work in \autoref{sec:future-work},
 and draw some conclusions in \autoref{sec:conclusions}.
 
 \section{Background on Web Views}
