@@ -6,6 +6,7 @@
 % \def\sectionautorefname{Section}
 % \def\subsectionautorefname{Subsection}
 \usepackage{graphicx}
+\usepackage[export]{adjustbox}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{textcomp}
@@ -51,6 +52,7 @@
 \usepackage{color}
 \newcommand{\todo}[1]{\noindent\textcolor{red}{{\bf \{TODO}: #1{\bf \}}}}
 
+\settopmatter{printacmref=false}
 
 % Copyright
 %\setcopyright{none}
@@ -197,13 +199,17 @@ Apple Safari Technology Preview, and several browsers more followed in implement
 Now, even multinational companies like Twitter
 or trivago bet on \textsc{pwa}~\cite{gallagher2017twitterlite,twg2017trivago},
 as well as giant national players like Tencent News or Sina Weibo in China~\cite{zhu2017pwa}.
+\autoref{fig:pwa-features} shows the \textsc{pwa} of Flipkart, a~shopping site popular in India,
+running in the Google Chrome browser on Android.
 
 \begin{figure}[hbt]
   \centering
   \includegraphics[width=\columnwidth]{pwa-features}
   \caption[Screenshots showing some \textsc{pwa} features]{
-    Screenshots showing some \textsc{pwa} features}
-    \small (\url{http://developers.google.com/web/updates/2015/12/getting-started-pwa}) 
+    Screenshots showing some \textsc{pwa} features at the example of Flipkart (\url{https://www.flipkart.com/}):
+    \emph{(i)} add to home screen prompt, \emph{(ii)} icon on home screen
+    \emph{(iii)} splash screen while launching, \emph{(iv)} launched in full screen (no address bar),
+    \emph{(v)} signaling offline state.}
   \label{fig:pwa-features}
 \end{figure}
 
@@ -519,6 +525,25 @@ If the Web View supports Service Workers, we look at the following \textsc{pwa} 
     for future use~\cite{west2017credentialmanagement}.
 \end{description} 
 
+\subsection{Feature-Detecting Various \textsc{pwa} Features}
+
+A~core principle of Progressive Enhancement~\cite{champeon2003progressiveenhancement}
+is \emph{feature detection}.
+The idea behind feature detection is to run a~test to determine
+whether a~certain feature is supported in the current browser,
+and then conditionally run code to provide an acceptable experience
+both in browsers that do support the feature, and browser that do not.
+It is distinct from \emph{browser sniffing}, where based on the user agent string
+assumptions are being made regarding feature support,
+which is generally considered problematic and bad practice~\cite{andersen2008useragent}.
+\autoref{code:feature-detection} shows the feature detection tests
+we run in order to detect the features listed in the previous subsection.
+As outlined before, a \texttt{ServiceWorkerRegistration},
+\emph{i.e.},\ an active Service Worker is a~prerequisite for all tests.  
+The variables \texttt{nav} for \texttt{navigator},
+\texttt{win} for \texttt{window}, and \texttt{doc} for \texttt{document}
+purely serve for code minification.
+
 \begin{lstlisting}[caption={Feature detection of various \textsc{pwa} features.},
   label=code:feature-detection, language=JavaScript, float=htb] 
   // nav ==> navigator
@@ -550,13 +575,80 @@ If the Web View supports Service Workers, we look at the following \textsc{pwa} 
     };
   };    
 \end{lstlisting}  
-  
-\subsection{Feature-Detecting Various Features}
 
 \subsection{Implementation Details}
 
+
+We have developed an open-source application called \emph{\textsc{pwa} Feature Detector}
+that allows for easily testing in-app browsers (and obviously stand-alone browsers on top)
+and check for the available \textsc{pwa} features.
+The code of the application can be found at
+\url{https://github.com/tomayac/pwa-feature-detector},
+the app itself is deployed at \url{https://tomayac.github.io/pwa-feature-detector/}.
+\autoref{fig:wechat-android-chrome65} shows a~screenshot of \textsc{pwa} Feature Detector
+running on Android~8.1.99 in WeChat in a~Web View based on Chrome~65.
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+  \caption[\textsc{pwa} Feature Detector running in WeChat.]{
+    \textsc{pwa} Feature Detector running on Android~8.1.99 in WeChat
+    in a~\texttt{WebView} based on Chrome~65.}
+  \label{fig:wechat-android-chrome65}
+\end{figure}
+
+\begin{figure}[hbt]
+  \centering
+  \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+  \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+    \textsc{pwa} Feature Detector running on Android~8.1.99 in Twitter
+    in a~\texttt{CustomTabsIntent} based on Chrome~65.}
+  \label{fig:wechat-android-chrome65}
+\end{figure}
+
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
+
+
+
+Table \ref{table:webview}
+Table \ref{table:customtab}
+
+\begin{figure*}[htb]
+  \setcounter{figure}{0}
+  \renewcommand{\figurename}{Table}
+  \begin{center}
+  \centerline{\includegraphics[trim=1.5cm 22.75cm 1.5cm 1.5cm, clip]{webview-results.pdf}}
+  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
+  \caption{Increasingly improving \textsc{pwa} feature support situation
+    on various Android \texttt{WebView}s, ordered by browser engine and Android version.
+    The sole \emph{seemingly} supported Web Share feature in Chrome~61
+    was actually a bug (\url{https://crbug.com/765923}).}
+  \label{table:webview}
+  \end{center}
+\end{figure*}
+
+\begin{figure}[htb]
+  \renewcommand{\figurename}{Table}
+  \begin{center}
+  \centerline{\includegraphics[width=.65\columnwidth,trim=4.3cm 16.25cm 4.3cm 1.5cm, clip]{custom-tab-results.pdf}}
+  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
+  \caption{Increasingly improving \textsc{pwa} feature support situation
+    on various Android \texttt{CustomTabsIntent}s,
+    ordered by browser engine and Android version.}
+  \label{table:customtab}
+  \end{center}
+\end{figure}
+
+\begin{figure*}[htb]
+  \begin{center}
+  \centerline{\includegraphics[trim=.5cm 13.75cm .5cm .5cm, clip]{index-sheet.pdf}}
+  \caption{Index sheet with all tested device screenshots showing both \texttt{WebView}s
+    and \texttt{CustomTabsIntent}s running in different applications.
+    High-resolution screenshots available at \url{https://photos.app.goo.gl/FdRsGOgtgNfvRIKB2}.}
+  \label{fig:indexsheet}
+  \end{center}
+\end{figure*}
 
 \section{Future Work}
 \label{sec:future-work}
