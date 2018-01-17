@@ -215,10 +215,12 @@ running in the Google Chrome browser on Android.
   \centering
   \includegraphics[width=\columnwidth]{pwa-features}
   \caption[Screenshots showing some \textsc{pwa} features]{
-    Screenshots showing some \textsc{pwa} features at the example of Flipkart (\url{https://www.flipkart.com/}):
-    \emph{(i)} add to home screen prompt, \emph{(ii)} icon on home screen
-    \emph{(iii)} splash screen while launching, \emph{(iv)} launched in full screen (no address bar),
-    \emph{(v)} signaling offline state.}
+    Screenshots showing some \textsc{pwa} features in action
+    at the example of Flipkart (\url{https://www.flipkart.com/}):
+    \emph{(i)}~add to home screen prompt, \emph{(ii)}~icon on the home screen
+    \emph{(iii)}~splash screen while launching,
+    \emph{(iv)}~launched in full screen without \textsc{url} bar, and
+    \emph{(v)}~signaling offline state.}
   \label{fig:pwa-features}
 \end{figure}
 
@@ -273,12 +275,21 @@ and draw some conclusions in \autoref{sec:conclusions}.
 \section{Background on Web Views}
 \label{sec:background}
 
-There are many different ways to integrate Web content in native applications,
+There are several different ways to integrate Web content in native applications,
 each having their own benefits and drawbacks.
 In the following, we describe the options on the two popular
 mobile operating system Android and i\textsc{os}.
-At time of writing, Safari on i\textsc{os} does not support Service Workers yet.
-For the sake of completeness, we nevertheless describe the Web View situation there as well.
+At time of writing (January 2018), Safari on i\textsc{os}
+does not support Service Workers and thus \textsc{pwa}s yet,
+albeit work on implementing them has started, and
+first versions of Safari Technology Preview on Apple's
+desktop operating system mac{os} have enabled
+Service Workers by default~\cite{davis2017safari}.
+In the spirit of Progressive Enhancement~\cite{champeon2003progressiveenhancement},
+where new features will just be used when they are available,
+and in the hope of Service Workers landing on the i\textsc{os} platform
+in the not too distant future,
+we nevertheless describe the Web View situation on i\textsc{os} as well.
 
 \subsection{Web Views on Android}
 
@@ -293,13 +304,13 @@ such as navigation controls or an address bar.
 All that \texttt{WebView} does, by default, is show a~Web page.
 Therefore, it uses the system browser's rendering engine to display Web pages
 and includes methods to navigate forward and backward through a history,
-zoom in and out, perform text searches and more.
+zoom in and out, perform text searches, inject custom JavaScript, and more.
 Looper describes~\cite{looper2015webviews}
 the development of the component as follows:
 ``Whereas earlier versions of the Android \textsc{os}
 relied on the WebKit rendering engine to power its \texttt{WebView},
 as of Android~4.4, various versions of Chromium are implemented.
-Typically, with each consecutive update of Android's \texttt{os},
+Typically, with each consecutive update of Android's~\texttt{os},
 a~new version of Chromium would also be included, thereby giving access
 to the new rendering engine's capability.
 This causes issues in backward compatibility for developers
@@ -311,7 +322,7 @@ depending on Android \textsc{os}' update cycle,
 the Android~5.0 \texttt{WebView} is a~system-level \texttt{.apk} file
 available in Google Play that can update itself in the background''.
 
-\paragraph{Chrome Custom Tab with \texttt{CustomTabsIntent}}
+\paragraph{Chrome Custom Tabs with \texttt{CustomTabsIntent}}
 
 While \texttt{WebView}s are completely isolated from the user's regular browsing activities,
 Chrome Custom Tabs~\cite{kinlan2016customtabs}, available since Chrome~45 (September 2015)
@@ -324,12 +335,13 @@ to sites they are already connected to, or re-grant permissions they have alread
 
 \paragraph{Trusted Web Activity with \texttt{TwaSessionHelper}}
 
-Chrome Custom Tabs solved many issues of Android Web Views,
-however, had the drawback of not being available in a~fullscreen variant like Web Views.
+Chrome Custom Tabs solved many issues of Android \texttt{WebView}s,
+however, had the drawback of not being available in a~fullscreen variant
+without any browser user interface elements like \texttt{WebView}s were.
 As of October 2017, Trusted Web Activities~\cite{googledevelopers2017twa} are a~new way to
 integrate Web app content such as \textsc{pwa}s with Android apps.
 They can be instantiated with a~\texttt{TwaSessionHelper}
-and use a~protocol based on Chrome Custom Tabs.
+and use a~communication protocol based on Chrome Custom Tabs.
 Content in a~Trusted Web Activity is trusted---the app and the site it opens
 are expected to come from the same developer, this is verified using Digital Asset
 Links.\footnote{Digital Asset Links:
@@ -341,7 +353,7 @@ Each activity (\emph{i.e.},\ screen) of an app is either completely provided by 
 or by an Android activity.
 While not enforced at time of writing, Trusted Web Activities
 will ultimately need to meet content requirements
-similar to the ``improved add to home screen`` flow~\cite{kinlan2017a2hs},
+similar to the ``improved add to home screen'' flow~\cite{kinlan2017a2hs},
 which is designed to be a~baseline of interactivity and performance.
 
 \subsection{Web Views on i\textsc{os}}
@@ -349,20 +361,18 @@ which is designed to be a~baseline of interactivity and performance.
 \paragraph{i\textsc{os} Web Views with \texttt{UIWebView}}
 
 Similar to Android, on i\textsc{os} as well Web content could be embedded with
-a~simple system-level Web View called \texttt{UIWebView}.\footnote{\texttt{UIWebView}:
-\url{https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/}}
+a~simple system-level Web View called \texttt{UIWebView}~\cite{apple2018uiwebview}.
 With the release of i\textsc{os}~4.3 in early 2011, Apple introduced Nitro,
 a~faster, just-in-time (\textsc{jit}) JavaScript engine for Safari
 that considerably sped up the browser's performance in loading complex Web pages.
 Nitro was exclusive to Safari: third-party developers could not benefit
-from the faster performance in their Web views based on \texttt{UIWebView},
+from the faster performance in their Web Views based on \texttt{UIWebView},
 which was widely considered a~calculated move to encourage usage of Safari
 over Web Views and Web apps saved to the iPhone's home screen~\cite{viticci2015safari}.
 
 \paragraph{i\textsc{os} Web Views with \texttt{WKWebView}}
 
-In June 2014, Apple announced \texttt{WKWebView},\footnote{\texttt{WKWebView}:
-\url{https://developer.apple.com/library/ios/documentation/WebKit/Reference/WKWebView_Ref/}}
+In June 2014, Apple announced \texttt{WKWebView}~\cite{apple2018wkwebview},
 a~new API that would allow developers
 to display Web content in custom Web Views with the same performance benefits of Safari.
 Designed with security in mind, \texttt{WKWebView} featured the same Nitro engine of Safari,
@@ -376,23 +386,22 @@ or Chrome for i\textsc{os}~\cite{chromiumblog2016chrome}.
 \paragraph{i\textsc{os} Web Views with \texttt{SFSafariViewController}}
 
 In September 2015 with the release of i\textsc{os}~9, Apple introduced a~new Web View called
-\texttt{SFSafariViewController}\footnote{\texttt{SFSafariViewController}:
-\url{https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller}},
+\texttt{SFSafariViewController}~\cite{apple2018sfsafariviewcontroller},
 which enables apps to delegate the responsibility of showing Web content to Safari itself,
 avoiding the need to write custom code for built-in browsers.
-Up until i\textsc{os}~10, Safari View Controller shared cookies and website data with Safari,
-which means that if a~user was already logged into a~specific website in Safari
-and a~link to that website was opened in Safari View Controller,
+Up until i\textsc{os}~10, \texttt{SFSafariViewController}
+shared cookies and website data with Safari,
+which means that if a~user was already logged in to a~specific website in Safari
+and a~link to that website was opened in \texttt{SFSafariViewController},
 the user was already logged in.
-As of i\textsc{os}~11, cookie and website data is no longer shared,
-but developers can leverage
-an \texttt{SFAuthenticationSession}\footnote{\texttt{SFAuthenticationSession}:
-\url{https://developer.apple.com/documentation/safariservices/sfauthenticationsession}}
+As of i\textsc{os}~11, cookie and website data is no longer shared automatically,
+but developers can on an as-needed basis leverage
+an \texttt{SFAuthenticationSession}~\cite{apple2018sfauthenticationsession}
 that shares data upon user consent. 
 
 \subsection{Parallelisms on the Two Operating Systems}
 
-The development on the two operating systems has certain parallels
+The development on the two operating systems has clear parallelisms
 that can be summarized as follows.
 From the initially slow and gradually improved simple Web Views \texttt{WebView}
 (with the transparent internal switch from WebKit to Chromium)
@@ -403,7 +412,10 @@ namely \texttt{CustomTabsIntent} on Android and
 which both (only upon user consent since i\textsc{os}~11)
 share cookies, permissions, \emph{etc.}
 with the particular system's main browser.
-Android's \texttt{TwaSessionHelper} so far has no i\textsc{os} equivalent yet.
+Solely Android's \texttt{TwaSessionHelper} so far has no i\textsc{os} equivalent yet.
+If (or rather as soon as) Apple catches up with implementing Service Workers,
+our findings will be applicable on i\textsc{os} as well,
+according to the parallelisms described in this section.
 
 \section{Detecting \textsc{pwa} Features}
 \label{sec:pwa-feature-detector}
