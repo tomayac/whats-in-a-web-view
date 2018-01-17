@@ -43,6 +43,7 @@
    numberstyle=\footnotesize,
    numbersep=9pt,
    tabsize=2,
+   frame = single,
    breaklines=true,
    showtabs=false,
    captionpos=b
@@ -433,13 +434,13 @@ became a~catch-all umbrella brand for Web apps
 that in some way or the other use Service Worker \textsc{api}s,
 feel (native) ``app-like,'' use latest browser features if they are available
 (Progressive Enhancement~\cite{champeon2003progressiveenhancement}),
-or that can be installed (added) to the home screen.
+or that can be installed to the home screen.
 Russell~\cite{russell2016pwa} lists a~number of requirements 
 for what he calls ``baseline appyness'':
 ``A~Progressive Web App is functionally defined by the technical properties
 that allow the browser to detect that the site meets certain criteria
 and is worthy of being added to the homescreen.
-These criteria are motivated by user-experience concerns.
+[\ldots]
 Apps on the homescreen:
 
 \begin{itemize}
@@ -454,27 +455,27 @@ Apps on the homescreen:
 \end{itemize}
 
 In continuation, Russell translates these requirements into more technical terms,
-writing that \textsc{pwa}s must:
+writing that \textsc{pwa}s must (emphasis ours):
 
 \begin{itemize}
   \item ``Originate from a Secure Origin.
     Served over \textsc{tls} and green padlock displays (no active mixed content).
   \item Load while offline (even if only a custom offline page).
-    By implication, this means that Progressive Web Apps require Service Workers.
+    By implication, this means that \emph{Progressive Web Apps require Service Workers}.
   \item Reference a~Web App Manifest [\ldots]''
 \end{itemize}
 
-For our study, we consider a~``\textsc{pwa} feature'' any feature that requires 
-one or more of the Service Worker \textsc{api}s.
-Additionally, if (if and only if) the Web View implements Service Workers,
-we consider some more recent browser \textsc{api}s,
+In consequence, we consider a~``\textsc{pwa} feature''
+any feature that requires  one or more of the Service Worker \textsc{api}s.
+Additionally, \emph{iff} (if and only if) the Web View implements Service Workers,
+we further consider additional recent browser \textsc{api}s,
 detailed in the following.
 
-\subsection{Progressive Web App Features}
+\subsection{Detecting Service Worker Support}
 
-A~\texttt{ServiceWorker} is installed by calling the registration method
-on the \texttt{navigator} object, the first parameter is obligatory
-and contains a~\textsc{url} that points to a~JavaScript file with the Service Worker logic.
+A~\texttt{ServiceWorker} is installed by calling the \texttt{register} method
+on the \texttt{navigator} object, whose first parameter is obligatory
+and contains a~\textsc{url} that points to a~JavaScript file with the Service Worker code.
 The result of this promise-based \textsc{api} in the success case is then
 a~\texttt{ServiceWorkerRegistration} object,
 which is either newly created if there was no previous \texttt{ServiceWorker},
@@ -483,10 +484,87 @@ where a~previous \texttt{ServiceWorker} existed~\cite{russell2017serviceworkers}
 In order to detect if a~given Web View supports \textsc{pwa} features at all,
 we can thus make a simple existence check for the \textsc{api},
 and then try to register a~Service Worker, as outlined in \autoref{code:sw-supported}.
-If the Web View supports Service Workers, we look at the following \textsc{pwa} features.
+
+\subsection{Considered Progressive Web App Features}
+
+\begin{description}
+  \itemsep0em 
+  \item[Offline Capabilities] The ability to still load and work
+    at least to some extent, even when the device is offline~\cite{russell2017serviceworkers},
+    for example, when airplane mode is on or when the device temporarily has no network coverage.
+  \item[Push Notifications] The capability to display push notifications as defined in
+    the Push \textsc{api}~\cite{beverloo2017pushapi}, for example,
+    to point users to fresh content, even when the app is not running.
+  \item[Add to Home Screen] The capability to be installed (added) to a~device's home screen
+    for easy access as outlined in~\cite{kinlan2017a2hs}.
+  \item[Background Sync] The capability to synchronize data
+    in the background~\cite{russell2017serviceworkers},
+    for example, to send messages in a~deferred way
+    after a~temporary offline situation in a~chat app.
+  \item[Navigation Preload] The capability to start network navigation requests
+    even while the Service Worker has not booted yet~\cite{archibald2017navigationpreload},
+    which would else be a~blocking operation.
+  \item[Silent Push] The capability to use the Web Budget
+    \textsc{api}~\cite{beverloo2017budgetapi}
+    to determine if potentially expensive operations
+    like background refresh may be started
+    upon a~silent push notification.
+  \item[Storage Estimation] The capability to estimate the available storage
+    that an application already uses and to know the available quota enforced by the
+    browser~\cite{vankesteren2018storage}.
+  \item[Persistent Storage] The capability to persistently store data
+    that is guaranteed not to be purged by the browser without user consent,
+    even if memory is running out~\cite{vankesteren2018storage}.
+  \item[Web Share] The capability to invoke the native sharing widget
+    of the operating system, as defined in the Web Share \textsc{api}~\cite{giuca2017webshare}.
+  \item[Media Session] The capability to show customized media metadata
+    on the platform user interface, customize available platform media controls,
+    and access platform media keys found in notification areas
+    and on lock screens of mobile devices
+    as defined in the Media Session standard~\cite{lamouri2017mediasessionapi}.
+  \item[Media Capabilities] The ability to make an optimal decision
+    when picking media content for the user by exposing information
+    about the decoding and encoding capabilities for a given format,
+    but also output capabilities to find the best match based on the device's display
+    as defined in the Media Capabilities standard~\cite{lamouri2017mediacapabilities}.
+  \item[Device Memory] The capability to read the amount of available
+    Random Access Memory (\textsc{ram}) in Gigabyte
+    of a~device in order to allow servers to customize the app experience
+    based on the built-in memory~\cite{panicker2017devicememory}.
+  \item[Getting Installed Related Apps] The capability to detect if a~corresponding
+    native application is installed alongside the \textsc{pwa} in order to,
+    for example, not show push notifications twice on both apps~\cite{kinlan2017relatedapps}.
+  \item[Payment Request] The capability to act as intermediary among merchants,
+    users, and payment methods by means of a~standardized payment communication flow
+    that supports different secure payment methods~\cite{bateman2017paymentrequest}.
+  \item[Credential Management] The capability to request a user's credentials
+    from the browser, and to help the browser correctly store credentials
+    for future use to facilitate logins~\cite{west2017credentialmanagement}.
+\end{description} 
+
+\subsection{Feature-Detecting Various \textsc{pwa} Features}
+
+A~core principle of Progressive Enhancement~\cite{champeon2003progressiveenhancement}
+is \emph{feature detection}.
+The idea behind feature detection is to run a~test to determine
+whether a~certain feature is supported in the current browser,
+and then conditionally run code to provide an acceptable experience
+both in browsers that do support the feature, and browsers that do not.
+It is distinct from \emph{browser sniffing}, where based on the user agent string
+assumptions are being made regarding feature support,
+which is generally considered problematic and bad practice~\cite{andersen2008useragent}.
+\autoref{code:feature-detection} shows the feature detection tests
+we run in order to detect the features listed in the previous subsection.
+As outlined before, a \texttt{ServiceWorkerRegistration},
+\emph{i.e.},\ an active Service Worker is a~prerequisite for all tests.  
+The variables \texttt{nav} for \texttt{navigator},
+\texttt{win} for \texttt{window}, and \texttt{doc} for \texttt{document}
+purely serve for code minification.
 
 \begin{lstlisting}[caption={Checking for Service Worker support.},
-  label=code:sw-supported, language=JavaScript, float=htb] 
+  label=code:sw-supported, language=JavaScript, float=t] 
+  // This commonly should happen after `window.onload`
+  // has fired in order to prioritize content display
   if ('serviceWorker' in navigator) { 
     navigator.serviceWorker.register(scriptURL, options)
     .then(registration => {
@@ -500,79 +578,8 @@ If the Web View supports Service Workers, we look at the following \textsc{pwa} 
   }
 \end{lstlisting}
 
-\begin{description}
-  \itemsep0em 
-  \item[Offline Capabilities] The ability to still load and work
-    at least to some extent, even when the device is offline, for example,
-    when it is in airplane mode or currently has no network~\cite{russell2017serviceworkers}.
-  \item[Push Notifications] The capability to display push notifications as defined in
-    the Push \textsc{api}~\cite{beverloo2017pushapi}, for example,
-    to point users to fresh content, even when the app is not running.
-  \item[Add to Home Screen] The capability to be installed (added) to a~device's home screen
-    for easy access as outlined in~\cite{kinlan2017a2hs}.
-  \item[Background Sync] The capability to synchronize data in the background,
-    for example, to send messages in a~deferred way
-    after an offline situation in a~chat app~\cite{russell2017serviceworkers}.
-  \item[Navigation Preload] The capability to start network navigation requests
-    even while the Service Worker has not booted yet~\cite{archibald2017navigationpreload},
-    which would else be a~blocking operation.
-  \item[Silent Push] The capability to use the Web Budget \cite{beverloo2017budgetapi}
-    in order to determine if potentially expensive operations should be started
-    following a~silent push notification.
-  \item[Storage Estimation] The capability to estimate the available storage
-    an application already uses and the available quota enforced by the
-    browser~\cite{vankesteren2018storage}.
-  \item[Persistent Storage] The capability to persistently store data
-    that is guaranteed not to be purged by the browser without user consent,
-    even if memory is running out~\cite{vankesteren2018storage}.
-  \item[Web Share] The capability to invoke the native sharing widgets
-    of the browser, as defined in the Web Share \textsc{api}~\cite{giuca2017webshare}.
-  \item[Media Session] The capability to show customized media metadata
-    on the platform user interface, customize available platform media controls,
-    and access platform media keys found in notification areas
-    and on lock screens of mobile devices
-    as defined in the Media Session standard~\cite{lamouri2017mediasessionapi}.
-  \item[Media Capabilities] The ability to make an optimal decision
-    when picking media content for the user by exposing information
-    about the decoding and encoding capabilities for a given format,
-    but also output capabilities to find the best match based on the device's display
-    as defined in Media Capabilities standard~\cite{lamouri2017mediacapabilities}.
-  \item[Device Memory] The capability to read the amount of available
-    Random Access Memory (\textsc{ram}) in Gigabyte
-    of a~device in order to allow servers to customize the app experience
-    based on the available memory~\cite{panicker2017devicememory}.
-  \item[Getting Installed Related Apps] The capability to detect if a~corresponding
-    native application is installed alongside the \textsc{pwa} in order to,
-    for example, not show push notifications twice on both apps~\cite{kinlan2017relatedapps}.
-  \item[Payment Request] The capability to act as intermediary among merchants,
-    users, and payment methods by means of a~standardized payment communication flow
-    that supports different secure payment methods~\cite{bateman2017paymentrequest}.
-  \item[Credential Management] The capability to request a user's credentials
-    from the browser, and to help the browser correctly store user credentials
-    for future use~\cite{west2017credentialmanagement}.
-\end{description} 
-
-\subsection{Feature-Detecting Various \textsc{pwa} Features}
-
-A~core principle of Progressive Enhancement~\cite{champeon2003progressiveenhancement}
-is \emph{feature detection}.
-The idea behind feature detection is to run a~test to determine
-whether a~certain feature is supported in the current browser,
-and then conditionally run code to provide an acceptable experience
-both in browsers that do support the feature, and browser that do not.
-It is distinct from \emph{browser sniffing}, where based on the user agent string
-assumptions are being made regarding feature support,
-which is generally considered problematic and bad practice~\cite{andersen2008useragent}.
-\autoref{code:feature-detection} shows the feature detection tests
-we run in order to detect the features listed in the previous subsection.
-As outlined before, a \texttt{ServiceWorkerRegistration},
-\emph{i.e.},\ an active Service Worker is a~prerequisite for all tests.  
-The variables \texttt{nav} for \texttt{navigator},
-\texttt{win} for \texttt{window}, and \texttt{doc} for \texttt{document}
-purely serve for code minification.
-
 \begin{lstlisting}[caption={Feature detection of various \textsc{pwa} features.},
-  label=code:feature-detection, language=JavaScript, float=htb] 
+  label=code:feature-detection, language=JavaScript, float=t] 
   // nav ==> navigator
   // win ==> window
   // doc ==> document
@@ -606,30 +613,49 @@ purely serve for code minification.
 \subsection{Implementation Details}
 
 We have developed an open-source application called \emph{\textsc{pwa} Feature Detector}
-that allows for easily testing in-app browsers (and obviously stand-alone browsers on top)
+that allows for easily testing in-app browsers (and naturally stand-alone browsers as well)
 and check for the available \textsc{pwa} features.
 The code of the application can be found at
 \url{https://github.com/tomayac/pwa-feature-detector},
 the app itself is deployed at \url{https://tomayac.github.io/pwa-feature-detector/}.
+When the \texttt{window.load} event fires,
+it tries to register a~no-op Service Worker
+that---in the success case---immediately claims its clients
+in order to obtain a~\texttt{ServiceWorkerRegistration},
+which is required for the then executed feature detection tests
+in \autoref{code:feature-detection}.
+Finally, it displays the results in tabular form,
+and also prints the browser's user agent string.
 \autoref{fig:wechat-android-chrome65} shows a~screenshot of \textsc{pwa} Feature Detector
-running on Android~8.1.99 in WeChat in a~Web View based on Chrome~65.
+running on Android~8.1.99 in the chat app WeChat in a~\texttt{WebView} based on Chrome~65.
+In contrast, \autoref{fig:twitter-android-chrome65} shows
+a~screenshot of \textsc{pwa} Feature Detector
+running on the \emph{same device}, but this time in the social networking app Twitter,
+which, rather than using a~\texttt{WebView},
+displays Web content in a~\texttt{CustomTabsIntent}.
+Despite the exact same underlying browser engine (Chrome/65.0.3310.3),
+the more powerful \texttt{CustomTabsIntent}-based in-app browser
+clearly wins the \textsc{pwa} feature competition.
+For non-domain experts we note that the \texttt{WebView}
+can be easily spotted by looking for the string
+``wv'' in the displayed user agent~\cite{chrome2018useragent}.
 
-\begin{figure}[hbt]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in WeChat.]{
-    \textsc{pwa} Feature Detector running on Android~8.1.99 in WeChat
+    \textsc{pwa} Feature Detector running on Android~8.1.99 in the app WeChat
     in a~\texttt{WebView} based on Chrome~65.}
   \label{fig:wechat-android-chrome65}
 \end{figure}
 
-\begin{figure}[hbt]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-    \textsc{pwa} Feature Detector running on Android~8.1.99 in Twitter
+    \textsc{pwa} Feature Detector running on Android~8.1.99 in the app Twitter
     in a~\texttt{CustomTabsIntent} based on Chrome~65.}
-  \label{fig:wechat-android-chrome65}
+  \label{fig:twitter-android-chrome65}
 \end{figure}
 
 \section{Results and Discussion}
