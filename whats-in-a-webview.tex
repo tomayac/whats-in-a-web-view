@@ -270,8 +270,8 @@ We then describe the examined \textsc{pwa} features and their underlying \textsc
 in \autoref{sec:pwa-feature-detector}, in which we also introduce
 our application \emph{\textsc{pwa} Feature Detector}.
 In continuation, we present and discuss our results in \autoref{sec:results-and-discussion}.
-We close the paper with an outlook on future work in \autoref{sec:future-work},
-and draw some conclusions in \autoref{sec:conclusions}.
+We close the paper with an outlook on future work,
+and draw some conclusions in \autoref{sec:future-work-conclusions}.
 
 \section{Background on Web Views}
 \label{sec:background}
@@ -334,14 +334,14 @@ while retaining the full functionality and performance of a~complete Web browser
 through a~shared cookie jar and permissions model, so users do not have to log in
 to sites they are already connected to, or re-grant permissions they have already granted.
 
-\paragraph{Trusted Web Activity with \texttt{TwaSessionHelper}}
+\paragraph{Trusted Web Activity with \texttt{TrustedWebUtils}}
 
 Chrome Custom Tabs solved many issues of Android \texttt{WebView}s,
 however, had the drawback of not being available in a~fullscreen variant
 without any browser user interface elements like \texttt{WebView}s were.
 As of October 2017, Trusted Web Activities~\cite{googledevelopers2017twa} are a~new way to
 integrate Web app content such as \textsc{pwa}s with Android apps.
-They can be instantiated with a~\texttt{TwaSessionHelper}
+They can be instantiated with the \texttt{TrustedWebUtils}
 and use a~communication protocol based on Chrome Custom Tabs.
 Content in a~Trusted Web Activity is trusted---the app and the site it opens
 are expected to come from the same developer, this is verified using Digital Asset
@@ -413,7 +413,7 @@ namely \texttt{CustomTabsIntent} on Android and
 which both (only upon user consent since i\textsc{os}~11)
 share cookies, permissions, \emph{etc.}
 with the particular system's main browser.
-Solely Android's \texttt{TwaSessionHelper} so far has no i\textsc{os} equivalent yet.
+Solely Android's Trusted Web Activity so far has no i\textsc{os} equivalent yet.
 If (or rather as soon as) Apple catches up with implementing Service Workers,
 our findings will be applicable on i\textsc{os} as well,
 according to the parallelisms described in this section.
@@ -642,7 +642,7 @@ can be easily spotted by looking for the string
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+  \includegraphics[width=.75\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in WeChat.]{
     \textsc{pwa} Feature Detector running on Android~8.1.99 in the app WeChat
     in a~\texttt{WebView} based on Chrome~65.}
@@ -651,7 +651,7 @@ can be easily spotted by looking for the string
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+  \includegraphics[width=.75\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in Twitter.]{
     \textsc{pwa} Feature Detector running on Android~8.1.99 in the app Twitter
     in a~\texttt{CustomTabsIntent} based on Chrome~65.}
@@ -661,10 +661,107 @@ can be easily spotted by looking for the string
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
 
-We have 
+We have run \textsc{pwa} Feature Detector on a~representative range of devices
+with different Android operating system versions, browser engines,
+and several applications with in-app browsers of users in China and Germany.
+We covered everything from Android~6 (``Marshmallow''),
+to Android~7 (``Nougat''),
+to the (at time of writing) most up-to-date Android~8 (``Oreo''). 
+For the browser engines, we had devices running Chrome~53, 55, 57, 59, 61, 63, and 65.
+The popularity of WeChat~\cite{chan2015wechat} in China clearly was reflected 
+in the applications with in-app browsers that we covered.
+We had WeChat (that identifies itself as ``MicroMessenger'' in user agent strings),
+Sina Weibo, Facebook, Facebook Messenger, and Twitter.
+Table~\ref{table:webview} shows our results for in-app browsers based on
+\texttt{WebView}, Table~\ref{table:customtab} shows the results for
+\texttt{CustomTabsIntent}.
+The results in both tables are primarily ordered by browser engine version
+and secondarily ordered by Android version.
+As can be seen, the Android version has no impact
+on the set of supported \textsc{pwa} features,
+which makes sense given the technical background information
+in \autoref{sec:background} regarding the decoupling of operating system version
+and \texttt{WebView} version.
 
-Table \ref{table:webview}
-Table \ref{table:customtab}
+\subsection{Discussion of the \texttt{WebView} Results}
+
+Table~\ref{table:webview} unsurprisingly shows that the more mature
+the underlying browser engine gets, the more \textsc{pwa} features become available.
+We can see that the \textsc{pwa} features which---according to the feature detection tests
+from~\autoref{code:feature-detection}---were reported to be working
+from the earliest examined browser engine on are \emph{Offline Capabilities},
+\emph{Background Sync}, \emph{Credential Management}, and \emph{Add to Home Screen}.
+However, we need to have a~closer look at the results.
+
+\subsubsection{\textsc{pwa} Features Reported to Be Working}
+
+\begin{description}
+  \itemsep0em 
+  \item[Offline Capabilities] Supported from the start, the feature \emph{Offline Capabilities}
+    is working as expected.
+  \item[Credential Management] The feature \emph{Credential Management}
+    is presumably erroneously exposed,
+     which is tracked in Chromium bug \url{https://crbug.com/589829}.    
+  \item[Add to Home Screen] While in theory supported from the start,
+    the situation with \emph{Add to Home Screen} is blurry.
+    First, the criteria for \emph{when exactly} the prompt actually triggers
+    are not exposed publicly. The conditions listed in~\cite{kinlan2017a2hs} are necessary,
+    but not sufficient.
+    What the feature test does is check if the browser knows how to deal
+    with a~Web App Manifest, however, if it does
+    is left to browser implementers~\cite{caceres2017manifest}.
+  \item[Background Sync] While in theory supported from the start,
+    \emph{Background Sync} exists, but fails upon trying to use it.
+    This is tracked in Chromium bug \url{https://crbug.com/570713}.
+  \item[Persistent Storage] Chrome~55 added support for
+     \emph{Persistent Storage}~\cite{vankesteren2018storage},
+     but while the \texttt{navigator.storage.persist} method exists and can be called,
+     the result is always negative, so data is actually never persisted.
+  \item[Navigation Preload] The feature \emph{Navigation Preload}, added in Chrome~59
+    is working as expected.
+  \item[Silent Push] \emph{Silent Push}, added in Chrome~61 has a~method
+    \texttt{navigator.budget.reserve} that returns nothing, where a~boolean value is expected.
+    Like \emph{Push Notifications} it is not supposed to work.
+  \item[Storage Estimation] The feature \emph{Storage Estimation}, added in Chrome~61,
+    is working as expected.
+  \item[Device Memory] The feature \emph{Device Memory}, added in Chrome~63, 
+    is working as intended.
+  \item[Web Share] The \emph{Web Share} feature, introduced in Chrome~61,
+    was for this one version of Chrome reported to be working, but fixed
+    to be no longer exposed in Chromium bug \url{https://crbug.com/765923}.
+\end{description} 
+
+\subsubsection{\textsc{pwa} Features Reported Not to Be Working}
+
+\begin{description}
+  \item[Push Notifications] The feature \emph{Push Notifications} is supposed and confirmed not to be working.
+  \item[Payment Request] The feature \emph{Payment Request} is supposed and confirmed not to be working.
+  \item[Media Session] The feature \emph{Media Session} is confirmed not to be working,
+    it might be enabled in the future, though, as discussed in Chromium bug
+    \url{https://crbug.com/678979}.
+  \item[Media Capabilities] The feature \emph{Media Capabilities} is confirmed not to be working,
+    it might be enabled in the future, though, as discussed in Chromium bug
+    \url{https://crbug.com/690364}.
+  \item[Getting Installed Related Apps] The feature \emph{Getting Installed Related Apps}
+    is supposed and confirmed not to be working.
+\end{description} 
+
+\subsection{Discussion of the \texttt{CustomTabsIntent} Results}
+
+The results in Table~\ref{table:customtab} present no big surprises. 
+We can see \emph{Device Memory} support and \emph{Getting Installed Related Apps} support
+be added in Chrome~63, and \emph{Media Capabilities} in Chrome~65.
+Everything else is confirmed to be working as intended,
+as \texttt{CustomTabsIntent} is as close to the system browser as it gets,
+as outlined in \autoref{sec:background}.
+
+\subsection{Why No Results for \texttt{TrustedWebUtils}}
+
+The results are exactly the same as with \texttt{CustomTabsIntent},
+as \texttt{TrustedWebUtils} internally just launches a~\texttt{CustomTabsIntent}
+with a~special flag \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY}.
+
+
 
 \begin{figure*}[htb]
   \setcounter{figure}{0}
@@ -702,12 +799,14 @@ Table \ref{table:customtab}
   \end{center}
 \end{figure*}
 
-\section{Future Work}
-\label{sec:future-work}
+\section{Future Work and Conclusions}
+\label{sec:future-work-conclusions}
 
-\section{Conclusions}
-\label{sec:conclusions}
+\section*{Acknowledgements}
 
+We would like to thank the participants of the Google Developer Days~2017 in Shanghai, China,
+who with their phones helped gather the statistics for this paper and sent us
+the screenshots on WeChat.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bibliography}
