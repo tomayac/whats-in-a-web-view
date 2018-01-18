@@ -109,16 +109,16 @@ When the Means of Web Access is not a~Web Browser}
 }
 \email{tomac@google.com}
 
-\author{Michael Yeung}
-% \authornote{}
-% \orcid{1234-5678-9012}
-\affiliation{%
-  \institution{Google Hong Kong}
-  \streetaddress{1~Matheson Street}
-  \city{Causeway Bay}
-  \country{Hong Kong}
-}
-\email{micyeung@google.com}
+%\author{Michael Yeung}
+%% \authornote{}
+%% \orcid{1234-5678-9012}
+%\affiliation{%
+%  \institution{Google Hong Kong}
+%  \streetaddress{1~Matheson Street}
+%  \city{Causeway Bay}
+%  \country{Hong Kong}
+%}
+%\email{micyeung@google.com}
 
 % The default list of authors is too long for headers.
 %\renewcommand{\shortauthors}{B. Trovato et al.}
@@ -217,7 +217,7 @@ running in the Google Chrome browser on Android.
   \includegraphics[width=\columnwidth]{pwa-features}
   \caption[Screenshots showing some \textsc{pwa} features]{
     Screenshots showing some \textsc{pwa} features in action
-    at the example of Flipkart (\url{https://www.flipkart.com/}):
+    at the example of Flipkart (\url{https://www.flipkart.com}):
     \emph{(i)}~add to home screen prompt, \emph{(ii)}~icon on the home screen
     \emph{(iii)}~splash screen while launching,
     \emph{(iv)}~launched in full screen without \textsc{url} bar, and
@@ -642,7 +642,7 @@ can be easily spotted by looking for the string
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=.75\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+  \includegraphics[width=.5\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in WeChat.]{
     \textsc{pwa} Feature Detector running on Android~8.1.99 in the app WeChat
     in a~\texttt{WebView} based on Chrome~65.}
@@ -651,7 +651,7 @@ can be easily spotted by looking for the string
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=.75\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+  \includegraphics[width=.5\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
   \caption[\textsc{pwa} Feature Detector running in Twitter.]{
     \textsc{pwa} Feature Detector running on Android~8.1.99 in the app Twitter
     in a~\texttt{CustomTabsIntent} based on Chrome~65.}
@@ -675,6 +675,7 @@ Sina Weibo, Facebook, Facebook Messenger, and Twitter.
 Table~\ref{table:webview} shows our results for in-app browsers based on
 \texttt{WebView}, Table~\ref{table:customtab} shows the results for
 \texttt{CustomTabsIntent}.
+\autoref{fig:indexsheet} shows screenshots of all tested devices.
 The results in both tables are primarily ordered by browser engine version
 and secondarily ordered by Android version.
 As can be seen, the Android version has no impact
@@ -682,6 +683,32 @@ on the set of supported \textsc{pwa} features,
 which makes sense given the technical background information
 in \autoref{sec:background} regarding the decoupling of operating system version
 and \texttt{WebView} version.
+
+\begin{figure*}[t]
+  \setcounter{figure}{0}
+  \renewcommand{\figurename}{Table}
+  \begin{center}
+  \centerline{\includegraphics[trim=1.5cm 22.85cm 1.5cm 1.5cm, clip]{webview-results.pdf}}
+  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
+  \caption{Increasingly improving \textsc{pwa} feature support situation
+    on various Android \texttt{WebView}s, ordered by browser engine and Android version.
+    The sole \emph{seemingly} supported Web Share feature in Chrome~61
+    was actually a bug (\url{https://crbug.com/765923}).}
+  \label{table:webview}
+  \end{center}
+\end{figure*}
+
+\begin{figure}[t]
+  \renewcommand{\figurename}{Table}
+  \begin{center}
+  \centerline{\includegraphics[width=.65\columnwidth,trim=4.3cm 16.4cm 4.3cm 1.5cm, clip]{custom-tab-results.pdf}}
+  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
+  \caption{Increasingly improving \textsc{pwa} feature support situation
+    on various Android \texttt{CustomTabsIntent}s,
+    ordered by browser engine and Android version.}
+  \label{table:customtab}
+  \end{center}
+\end{figure}
 
 \subsection{Discussion of the \texttt{WebView} Results}
 
@@ -728,7 +755,7 @@ However, we need to have a~closer look at the results.
     is working as intended.
   \item[Web Share] The \emph{Web Share} feature, introduced in Chrome~61,
     was for this one version of Chrome reported to be working, but fixed
-    to be no longer exposed in Chromium bug \url{https://crbug.com/765923}.
+    to be no longer exposed in the browser via Chromium bug \url{https://crbug.com/765923}.
 \end{description} 
 
 \subsubsection{\textsc{pwa} Features Reported Not to Be Working}
@@ -761,35 +788,73 @@ The results are exactly the same as with \texttt{CustomTabsIntent},
 as \texttt{TrustedWebUtils} internally just launches a~\texttt{CustomTabsIntent}
 with a~special flag \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY}.
 
+\section{Future Work and Conclusions}
+\label{sec:future-work-conclusions}
 
+Future work will cover two aspects:
+we look at it from the point of view of app developers
+programming \textsc{pwa}s for Web Views,
+as well as from the angle of a~browser vendor.
 
-\begin{figure*}[htb]
-  \setcounter{figure}{0}
-  \renewcommand{\figurename}{Table}
-  \begin{center}
-  \centerline{\includegraphics[trim=1.5cm 22.75cm 1.5cm 1.5cm, clip]{webview-results.pdf}}
-  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
-  \caption{Increasingly improving \textsc{pwa} feature support situation
-    on various Android \texttt{WebView}s, ordered by browser engine and Android version.
-    The sole \emph{seemingly} supported Web Share feature in Chrome~61
-    was actually a bug (\url{https://crbug.com/765923}).}
-  \label{table:webview}
-  \end{center}
-\end{figure*}
+\subsection{Improving Feature Tests}
 
-\begin{figure}[htb]
-  \renewcommand{\figurename}{Table}
-  \begin{center}
-  \centerline{\includegraphics[width=.65\columnwidth,trim=4.3cm 16.25cm 4.3cm 1.5cm, clip]{custom-tab-results.pdf}}
-  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
-  \caption{Increasingly improving \textsc{pwa} feature support situation
-    on various Android \texttt{CustomTabsIntent}s,
-    ordered by browser engine and Android version.}
-  \label{table:customtab}
-  \end{center}
-\end{figure}
+First, we will look into improving the feature detection tests in
+\autoref{code:feature-detection}.
+Such tests always need to be side-effect-free,
+so in the majority of cases naively trying to execute an exposed method
+rather than just testing for its existence is prohibitive.
+We have seen that no-op or dummy methods like with \emph{Silent Push},
+where \texttt{navigator.budget.reserve} just did nothing,
+or with \emph{Persistent Storage}, 
+where the method \texttt{navigator.storage.persist} always returned a~negative response
+can be the reason for unexpected results.
+In an ideal world, existence tests should just be good enough,
+which requires catching involuntarily exposed interfaces.
+Chromium bug \url{https://crbug.com/787868} has as an objective
+to automatically identify such cases.
 
-\begin{figure*}[htb]
+\subsection{Polyfilling Missing \textsc{api}s in \texttt{WebView}s}
+
+While generally \texttt{CustomTabsIntent} is the Web View of choice,
+there may be reasons where app developers are stuck with \texttt{WebView}.
+A~\emph{polyfill} is code that implements a~feature on Web browsers
+that do not support the feature.
+The \texttt{WebView.evaluateJavascript} method allows JavaScript code to be 
+asynchronously evaluated in the context of the currently displayed page.
+For app developers, this can help improve
+the \textsc{pwa} support situation for some \textsc{api}s
+that can, at least to some extent, be polyfilled.
+One example might be \emph{Push Notifications},
+albeit polyfills like \texttt{notification.js}\footnote{\url{https://adodson.com/notification.js/}} 
+can acknowledgedly only partially work due to technical constraints.
+
+\subsection{Conclusions}
+
+In this paper, we have first provided the technical background on Web Views
+on both Android and i\textsc{os}.
+Second, we have defined a~number of \textsc{pwa} features
+and documented and implemented tests for detecting them
+in the open source app \textsc{pwa} Feature Detector. 
+In continuation, we have evaluated the approach on a~great variety of devices
+with different versions of operating systems, Web Views,
+and applications with in-app browser.
+We have identified a~number of issues with these feature tests,
+and have collected various interfaces that are exposed erroneously in browsers.
+The conclusion is that we need to find out why not more developers use
+the superior \texttt{CustomTabsIntent}.
+One theory is a~perceived fear of the Open Web, \emph{e.g.},
+when through open \textsc{api}s like \emph{Web Share} users could too easily
+escape the walled garden of a~social network.
+
+\section*{Acknowledgements}
+
+We would like to thank the participants of the Google Developer Days~2017 in Shanghai, China,
+who with their phones helped gather the statistics for this paper and sent us
+the screenshots on WeChat.
+Further, we would like to thank Adam Bar of \url{https://whatwebcando.today} fame
+for the helpful discussions around feature detection.
+
+\begin{figure*}[b]
   \begin{center}
   \centerline{\includegraphics[trim=.5cm 13.75cm .5cm .5cm, clip]{index-sheet.pdf}}
   \caption{Index sheet with all tested device screenshots showing both \texttt{WebView}s
@@ -798,15 +863,6 @@ with a~special flag \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY}.
   \label{fig:indexsheet}
   \end{center}
 \end{figure*}
-
-\section{Future Work and Conclusions}
-\label{sec:future-work-conclusions}
-
-\section*{Acknowledgements}
-
-We would like to thank the participants of the Google Developer Days~2017 in Shanghai, China,
-who with their phones helped gather the statistics for this paper and sent us
-the screenshots on WeChat.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bibliography}
