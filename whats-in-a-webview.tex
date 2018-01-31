@@ -5,6 +5,7 @@
 % \usepackage[pdftex,urlcolor=black,colorlinks=true,linkcolor=black,citecolor=black]{hyperref}
 % \def\sectionautorefname{Section}
 % \def\subsectionautorefname{Subsection}
+
 \usepackage{graphicx}
 \usepackage[export]{adjustbox}
 \usepackage{caption}
@@ -271,8 +272,8 @@ We then describe the examined \textsc{pwa} features and their underlying \textsc
 in \autoref{sec:pwa-feature-detector}, in which we also introduce
 our application \emph{\textsc{pwa} Feature Detector}.
 In continuation, we present and discuss our results in \autoref{sec:results-and-discussion}.
-We close the paper with an outlook on future work,
-and draw some conclusions in \autoref{sec:future-work-conclusions}.
+We close the paper with an outlook on future work in \autoref{sec:future-work}
+and draw our conclusions in \autoref{sec:conclusions}.
 
 \section{Background on Web Views}
 \label{sec:background}
@@ -547,13 +548,14 @@ both in browsers that do support the feature, and browsers that do not.
 It is distinct from \emph{browser sniffing}, where based on the user agent string
 assumptions are being made regarding feature support,
 which is generally considered problematic and bad practice~\cite{andersen2008useragent}.
-\autoref{code:feature-detection} shows the feature detection tests
+\autoref{code:feature-detection} shows the tests
 we run in order to detect the features listed in the previous subsection.
-As outlined before, a \texttt{ServiceWorkerRegistration},
+As outlined before, a~\texttt{ServiceWorkerRegistration},
 \emph{i.e.},\ an active Service Worker is a~prerequisite for all tests.  
 The variables \texttt{nav} for \texttt{navigator},
-\texttt{win} for \texttt{window}, and \texttt{doc} for \texttt{document}
-purely serve for code minification.
+\texttt{win} for \texttt{window}, \texttt{doc} for \texttt{document},
+\texttt{reg} for \texttt{ServiceWorkerRegistration}
+purely serve for code minification purposes.
 
 \begin{lstlisting}[caption={Checking for Service Worker support.},
   label=code:sw-supported, language=JavaScript, float=t] 
@@ -640,45 +642,10 @@ can be seen in \autoref{fig:facebook-ios-safari11_1} with a~\texttt{WKWebView} d
 and in \autoref{fig:twitter-ios-safari11_1} with an \texttt{SFSafariViewController}
 displayed in Twitter.
 
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[t]{0.475\columnwidth}
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
-    \caption[\textsc{pwa} Feature Detector running in WeChat.]{
-      In WeChat in a~Chrome~65 based \texttt{WebView}.}
-    \label{fig:wechat-android-chrome65}
-  \end{subfigure}    
-  \quad
-  \begin{subfigure}[t]{0.475\columnwidth}  
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
-    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-      In Twitter in a~Chrome~65 based \texttt{CustomTabsIntent}.}
-    \label{fig:twitter-android-chrome65}
-  \end{subfigure}
-  \caption{\textsc{pwa} Feature Detector running on Android~8.1.99.}    
-\end{figure}
-
-
-\begin{figure}[t]
-  \centering
-  \begin{subfigure}[t]{0.475\columnwidth}
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-facebook-ios-safari11_1}
-    \caption[\textsc{pwa} Feature Detector running in Facebook.]{
-      In Facebook in a~Safari~11.1 based \texttt{WKWebView}.}
-    \label{fig:facebook-ios-safari11_1}
-  \end{subfigure}    
-  \quad
-  \begin{subfigure}[t]{0.475\columnwidth}  
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-ios-safari11_1}
-    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-      In Twitter in a~Safari~11.1 based \texttt{SFSafariViewController}.}
-    \label{fig:twitter-ios-safari11_1}
-  \end{subfigure} 
-  \caption{\textsc{pwa} Feature Detector running on i\textsc{os}~11.3 Beta~1.}       
-\end{figure}
-
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
+
+\subsection{Android}
 
 We have run \textsc{pwa} Feature Detector on a~representative range of devices
 with different Android operating system versions, browser engines,
@@ -740,7 +707,7 @@ and \texttt{WebView} version.
   \end{center}
 \end{figure}
 
-\subsection{Discussion of the \texttt{WebView} Results}
+\paragraph{Discussion of the \texttt{WebView} Results}
 
 Table~\ref{table:webview} unsurprisingly shows that the more mature
 the underlying browser engine gets, the more \textsc{pwa} features become available.
@@ -750,7 +717,7 @@ from the earliest examined browser engine on are \emph{Offline Capabilities},
 \emph{Background Sync}, \emph{Credential Management}, and \emph{Add to Home Screen}.
 However, we need to have a~closer look at the results.
 
-\subsubsection{\textsc{pwa} Features Reported to Be Working}
+\paragraph{\textsc{pwa} Features Reported to Be Working}
 
 \begin{description}
   \itemsep0em 
@@ -764,8 +731,11 @@ However, we need to have a~closer look at the results.
     First, the criteria for \emph{when exactly} the prompt actually triggers
     are not exposed publicly. The conditions listed in~\cite{kinlan2017a2hs} are necessary,
     but not sufficient.
-    What the feature test does is check if the browser knows how to deal
-    with a~Web App Manifest, however, if it does
+    What the feature test does is check if the browser supports the \texttt{onbeforeinstallprompt} event
+    that fires just before a~potential install prompt would be shown,
+    and whether it knows how to deal
+    with a~Web App Manifest.
+    However, if it then actually shows a~prompt
     is left to browser implementers~\cite{caceres2017manifest}.
   \item[Background Sync] While in theory supported from the start,
     \emph{Background Sync} exists, but fails upon trying to use it.
@@ -781,14 +751,14 @@ However, we need to have a~closer look at the results.
     Like \emph{Push Notifications} it is not supposed to work.
   \item[Storage Estimation] The feature \emph{Storage Estimation}, added in Chrome~61,
     is working as expected.
-  \item[Device Memory] The feature \emph{Device Memory}, added in Chrome~63, 
+  \item[Device Memory] The feature \emph{Device Memory}, added in Chrome version~63, 
     is working as intended.
   \item[Web Share] The \emph{Web Share} feature, introduced in Chrome~61,
     was for this one version of Chrome reported to be working, but fixed
     to be no longer exposed in the browser via Chromium bug \url{https://crbug.com/765923}.
 \end{description} 
 
-\subsubsection{\textsc{pwa} Features Reported Not to Be Working}
+\paragraph{\textsc{pwa} Features Reported Not to Be Working}
 
 \begin{description}
   \item[Push Notifications] The feature \emph{Push Notifications} is supposed and confirmed not to be working.
@@ -803,23 +773,91 @@ However, we need to have a~closer look at the results.
     is supposed and confirmed not to be working.
 \end{description} 
 
-\subsection{Discussion of the \texttt{CustomTabsIntent} Results}
+\paragraph{Discussion of the \texttt{CustomTabsIntent} Results}
 
-The results in Table~\ref{table:customtab} present no big surprises. 
+The results in Table~\ref{table:customtab} present no surprises. 
 We can see \emph{Device Memory} support and \emph{Getting Installed Related Apps} support
 be added in Chrome~63, and \emph{Media Capabilities} in Chrome~65.
 Everything else is confirmed to be working as intended,
 as \texttt{CustomTabsIntent} is as close to the system browser as it gets,
-as outlined in \autoref{sec:background}.
+like outlined in \autoref{sec:background}.
 
-\subsection{Why No Results for \texttt{TrustedWebUtils}}
+Regarding \texttt{TrustedWebUtils},
+the results are exactly the same as with \texttt{CustomTabsIntent},
+because \texttt{TrustedWebUtils} internally just launches a~\texttt{CustomTabsIntent}
+and sets a~special flag called \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY}.
 
-The results are exactly the same as with \texttt{CustomTabsIntent},
-as \texttt{TrustedWebUtils} internally just launches a~\texttt{CustomTabsIntent}
-with a~special flag \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY}.
+\subsection{i\textsc{os}}
 
-\section{Future Work and Conclusions}
-\label{sec:future-work-conclusions}
+We have run \textsc{pwa} Feature Detector on Beta versions of i\textsc{os}~11.3,
+the first operating system by Apple that ships with a~\textsc{pwa}-capable browser.
+Table~\ref{table:safari} shows the very limited set of \textsc{pwa} features
+that are available so far on \texttt{WKWebView} and \texttt{SFSafariViewController}.
+Albeit Apple made no official announcement of the newly-gained Service Worker support,
+Safari Engineer Mondello's tweet~\cite{mondello2018safari} was widely shared and favorited,
+proving how eagerly awaited Apple's buy-in was in the broader \textsc{pwa} community.
+
+\paragraph{\textsc{pwa} Features Reported to Be Working}
+
+\begin{description}
+  \itemsep0em 
+  \item[Offline Capabilities] While some bugs
+    exist,\footnote{\url{https://bugs.webkit.org/buglist.cgi?component=Service\%20Workers&list_id=3439423&product=WebKit&resolution=---}} the feature \emph{Offline Capabilities}
+    is working as expected on both \texttt{WKWebView} and \texttt{SFSafariViewController}.
+  \item[Add to Home Screen] The browser is confirmed~\cite{mondello2018safari}
+    to make use of the information in the Web App Manifest,
+    but no automatic prompting to install applications happens.
+    The corresponding \texttt{onbeforeinstallprompt} event is missing.
+    As no prompt is being shown, and the manual ``Add to Home Screen'' functionality
+    is only exposed in stand-alone Safari, neither \texttt{SFSafariViewController} nor \texttt{WKWebView}
+    actually support add to home screen.
+  \item[Payment Request] The feature \emph{Payment Request} is supposed
+    to be working on \texttt{SFSafariViewController}, but calling the \texttt{paymentRequest.canMakePayment()}
+    method always returns a~negative result.
+\end{description} 
+
+\paragraph{\textsc{pwa} Features Reported Not to Be Working}
+
+All other \textsc{pwa} features are supposed and confirmed not to be working.
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in WeChat.]{
+      In WeChat in a~Chrome~65 based \texttt{WebView}.}
+    \label{fig:wechat-android-chrome65}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Chrome~65 based \texttt{CustomTabsIntent}.}
+    \label{fig:twitter-android-chrome65}
+  \end{subfigure}
+  \caption{\textsc{pwa} Feature Detector running on Android~8.1.99.}    
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-facebook-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Facebook.]{
+      In Facebook in a~Safari~11.1 based \texttt{WKWebView}.}
+    \label{fig:facebook-ios-safari11_1}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Safari~11.1 based \texttt{SFSafariViewController}.}
+    \label{fig:twitter-ios-safari11_1}
+  \end{subfigure} 
+  \caption{\textsc{pwa} Feature Detector running on i\textsc{os}~11.3 Beta~1.}       
+\end{figure}
+
+\section{Future Work}
+\label{sec:future-work}
 
 Future work will cover two aspects:
 we look at it from the point of view of app developers
@@ -858,7 +896,8 @@ One example might be \emph{Push Notifications},
 albeit polyfills like \texttt{notification.js}\footnote{\url{https://adodson.com/notification.js/}} 
 can acknowledgedly only partially work due to technical constraints.
 
-\subsection{Conclusions}
+\section{Conclusions}
+\label{sec:conclusions}
 
 In this paper, we have first provided the technical background on Web Views
 on both Android and i\textsc{os}.
@@ -870,18 +909,16 @@ with different versions of operating systems, Web Views,
 and applications with in-app browser.
 We have identified a~number of issues with these feature tests,
 and have collected various interfaces that are exposed erroneously in browsers.
-The conclusion is that we need to find out why not more developers use
-the superior \texttt{CustomTabsIntent}.
-One theory is a~perceived fear of the Open Web, \emph{e.g.},
-when through open \textsc{api}s like \emph{Web Share} users could too easily
-escape the walled garden of a~social network.
+
+\todo{Write Conclusions}
 
 \section*{Acknowledgements}
 
-We would like to thank the participants of the Google Developer Days~2017 in Shanghai, China,
-who with their phones helped gather the statistics for this paper and sent us
+\emph{Alex Russell}'s review comments have greatly helped sharpen the points made in this paper.
+We would like to thank the \emph{participants of the Google Developer Days~2017 in Shanghai, China},
+who helped gather the statistical data and sent us
 the screenshots on WeChat.
-Further, we would like to thank Adam Bar of \url{https://whatwebcando.today} fame
+Further, we would like to thank \emph{Adam Bar} of \url{https://whatwebcando.today} fame
 for the helpful discussions around feature detection.
 
 \begin{figure*}[b]
