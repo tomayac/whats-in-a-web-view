@@ -134,9 +134,9 @@ even when the app is not running,
 and---together with Web App Manifests---allow users to \emph{install \textsc{pwa}s}
 to their devices' home screens.
 Service Workers being a Web standard, support has landed in several
-stand-alone Web browsers---among them (but not limited to)
+stand-alone Android Web browsers---among them (but not limited to)
 Chrome and its open-source foundation Chromium, Firefox, Edge, Opera,
-\textsc{uc}~Browser, Samsung Internet, as well as preview versions of Safari.
+\textsc{uc}~Browser, Samsung Internet, and---eagerly awaited---i\textsc{os} Safari.
 In this paper, we examine the \textsc{pwa} feature support situation in \emph{Web Views},
 that is,\ \emph{in-app Web experiences} that are explicitly \emph{not} stand-alone browsers.
 Such in-app browsers can commonly be encountered in chat applications like WeChat or WhatsApp,
@@ -204,8 +204,9 @@ and \emph{synchronize} data in the background even when the app was not running,
 and---together with Web App Manifests~\cite{caceres2017manifest}---allowed
 users to actually \emph{install \textsc{pwa}s} to their devices' home screens
 with proper operating system integration~\cite{kinlan2017a2hs}.
-Other browsers like Mozilla Firefox, Microsoft Edge, Opera, \textsc{uc}~Browser, Samsung Internet,
-Apple Safari Technology Preview, and several browsers more followed in implementing Service Workers.
+Other Android browsers like Mozilla Firefox, Microsoft Edge, Opera, \textsc{uc}~Browser, Samsung Internet,
+and---eagerly awaited---Apple Safari on i\textsc{os},
+as well as several browsers more followed in implementing Service Workers.
 Now, even multinational companies like Twitter
 or trivago bet on \textsc{pwa}~\cite{gallagher2017twitterlite,twg2017trivago},
 as well as giant national players like Tencent News or Sina Weibo in China~\cite{zhu2017pwa}.
@@ -280,17 +281,13 @@ There are several different ways to integrate Web content in native applications
 each having their own benefits and drawbacks.
 In the following, we describe the options on the two popular
 mobile operating system Android and i\textsc{os}.
-At time of writing (January 2018), Safari on i\textsc{os}
-does not support Service Workers and thus \textsc{pwa}s yet,
-albeit work on implementing them has started, and
-first versions of Safari Technology Preview on Apple's
-desktop operating system mac{os} have enabled
-Service Workers by default~\cite{davis2017safari}.
-In the spirit of Progressive Enhancement~\cite{champeon2003progressiveenhancement},
-where new features will just be used when they are available,
-and in the hope of Service Workers landing on the i\textsc{os} platform
-in the not too distant future,
-we nevertheless describe the Web View situation on i\textsc{os} as well.
+While Android had enjoyed Service Worker support for as long as 2014~\cite{cooney2014chromium},
+at time of writing (February 2018), Safari on i\textsc{os}
+for the first time supported Service Workers
+in Beta versions of i\textsc{os}~11.3~\cite{mondello2018safari}.
+The implementation is still incomplete and several bugs exist, but in the spirit of
+Progressive Enhancement~\cite{champeon2003progressiveenhancement}
+the situation is expected to improve over time.
 
 \subsection{Web Views on Android}
 
@@ -414,9 +411,6 @@ which both (only upon user consent since i\textsc{os}~11)
 share cookies, permissions, \emph{etc.}
 with the particular system's main browser.
 Solely Android's Trusted Web Activity so far has no i\textsc{os} equivalent yet.
-If (or rather as soon as) Apple catches up with implementing Service Workers,
-our findings will be applicable on i\textsc{os} as well,
-according to the parallelisms described in this section.
 
 \section{Detecting \textsc{pwa} Features}
 \label{sec:pwa-feature-detector}
@@ -589,7 +583,8 @@ purely serve for code minification.
       'Offline Capabilities': 'caches' in win,
       'Push Notifications': 'pushManager' in reg,
       'Add to Home Screen': doc.createElement('link')
-          .relList.supports('manifest'),
+          .relList.supports('manifest') &&
+          'onbeforeinstallprompt' in win,
       'Background Sync': 'sync' in reg,
       'Navigation Preload': 'navigationPreload' in reg,
       'Silent Push': 'budget' in nav &&
@@ -634,28 +629,52 @@ running on the \emph{same device}, but this time in the social networking app Tw
 which, rather than using a~\texttt{WebView},
 displays Web content in a~\texttt{CustomTabsIntent}.
 Despite the exact same underlying browser engine (Chrome/65.0.3310.3),
-the more powerful \texttt{CustomTabsIntent}-based in-app browser
+the \texttt{CustomTabsIntent}-based in-app browser
 clearly wins the \textsc{pwa} feature competition.
-For non-domain experts we note that the \texttt{WebView}
+For non-domain experts we note that on Android the \texttt{WebView}
 can be easily spotted by looking for the string
 ``wv'' in the displayed user agent~\cite{chrome2018useragent}.
+The corresponding i\textsc{os} screenshots, likewise
+based on the same underlying browser engine (Safari~11.1),
+can be seen in \autoref{fig:facebook-ios-safari11_1} with a~\texttt{WKWebView} displayed in Facebook 
+and in \autoref{fig:twitter-ios-safari11_1} with an \texttt{SFSafariViewController}
+displayed in Twitter.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=.5\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
-  \caption[\textsc{pwa} Feature Detector running in WeChat.]{
-    \textsc{pwa} Feature Detector running on Android~8.1.99 in the app WeChat
-    in a~\texttt{WebView} based on Chrome~65.}
-  \label{fig:wechat-android-chrome65}
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in WeChat.]{
+      In WeChat in a~Chrome~65 based \texttt{WebView}.}
+    \label{fig:wechat-android-chrome65}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Chrome~65 based \texttt{CustomTabsIntent}.}
+    \label{fig:twitter-android-chrome65}
+  \end{subfigure}
+  \caption{\textsc{pwa} Feature Detector running on Android~8.1.99.}    
 \end{figure}
 
+
 \begin{figure}[t]
   \centering
-  \includegraphics[width=.5\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
-  \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-    \textsc{pwa} Feature Detector running on Android~8.1.99 in the app Twitter
-    in a~\texttt{CustomTabsIntent} based on Chrome~65.}
-  \label{fig:twitter-android-chrome65}
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-facebook-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Facebook.]{
+      In Facebook in a~Safari~11.1 based \texttt{WKWebView}.}
+    \label{fig:facebook-ios-safari11_1}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Safari~11.1 based \texttt{SFSafariViewController}.}
+    \label{fig:twitter-ios-safari11_1}
+  \end{subfigure} 
+  \caption{\textsc{pwa} Feature Detector running on i\textsc{os}~11.3 Beta~1.}       
 \end{figure}
 
 \section{Results and Discussion}
@@ -707,6 +726,17 @@ and \texttt{WebView} version.
     on various Android \texttt{CustomTabsIntent}s,
     ordered by browser engine and Android version.}
   \label{table:customtab}
+  \end{center}
+\end{figure}
+
+\begin{figure}[t]
+  \renewcommand{\figurename}{Table}
+  \begin{center}
+  \centerline{\includegraphics[width=.65\columnwidth,trim=4.3cm 16.4cm 4.3cm 1.5cm, clip]{ios-results.pdf}}
+  % https://docs.google.com/spreadsheets/d/18xaJeIrfaA-8wNucK7IDQMfr5LHjsBcey4lHF3Pkd1o/edit?usp=sharing
+  \caption{\textsc{pwa} feature support situation on i\textsc{os} for both \texttt{WKWebView} (Facebook)
+    and \texttt{CustomTabsIntent} (Twitter).}
+  \label{table:safari}
   \end{center}
 \end{figure}
 
@@ -856,10 +886,11 @@ for the helpful discussions around feature detection.
 
 \begin{figure*}[b]
   \begin{center}
-  \centerline{\includegraphics[trim=.5cm 13.75cm .5cm .5cm, clip]{index-sheet.pdf}}
-  \caption{Index sheet with all tested device screenshots showing both \texttt{WebView}s
-    and \texttt{CustomTabsIntent}s running in different applications.
-    High-resolution screenshots available at \url{https://photos.app.goo.gl/FdRsGOgtgNfvRIKB2}.}
+  \centerline{\includegraphics[width=\paperwidth, trim=0cm 2.5cm 0cm 0cm, clip]{index-sheet.pdf}}
+  \caption{Index sheet with all tested device screenshots showing Android \texttt{WebView}s and
+    \texttt{CustomTabsIntent}s, as well as i\textsc{os} \texttt{WKWebView} and \texttt{SFSafariViewController},
+    running in different applications.
+    Higher resolution screenshots are available at \url{https://photos.app.goo.gl/Kh3DyhpL6Q58G7tn1}.}
   \label{fig:indexsheet}
   \end{center}
 \end{figure*}
