@@ -647,6 +647,42 @@ can be seen in \autoref{fig:facebook-ios-safari11_1} with a~\texttt{WKWebView} d
 and in \autoref{fig:twitter-ios-safari11_1} with an \texttt{SFSafariViewController}
 displayed in Twitter.
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in WeChat.]{
+      In WeChat in a~Chrome~65 based \texttt{WebView}.}
+    \label{fig:wechat-android-chrome65}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Chrome~65 based \texttt{CustomTabsIntent}.}
+    \label{fig:twitter-android-chrome65}
+  \end{subfigure}
+  \caption{\textsc{pwa} Feature Detector running on Android~8.1.99.}    
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.475\columnwidth}
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-facebook-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Facebook.]{
+      In Facebook in a~Safari~11.1 based \texttt{WKWebView}.}
+    \label{fig:facebook-ios-safari11_1}
+  \end{subfigure}    
+  \quad
+  \begin{subfigure}[t]{0.475\columnwidth}  
+    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-ios-safari11_1}
+    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
+      In Twitter in a~Safari~11.1 based \texttt{SFSafariViewController}.}
+    \label{fig:twitter-ios-safari11_1}
+  \end{subfigure} 
+  \caption{\textsc{pwa} Feature Detector running on i\textsc{os}~11.3 Beta~1.}       
+\end{figure}
+
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
 
@@ -778,14 +814,15 @@ However, we need to have a~closer look.
     is supposed and confirmed not to be working.
 \end{description} 
 
-\paragraph{\textbf{Discussion of \texttt{CustomTabsIntent} and \texttt{TrustedWebUtils} Results}}
+\paragraph{\textbf{Discussion of \texttt{CustomTabsIntent} \& \texttt{TrustedWebUtils} Results}}
 
-The results in Table~\ref{table:customtab} present no surprises. 
+The results in Table~\ref{table:customtab} show
+a~steadily improving \textsc{pwa} feature support situation. 
 We can see that \emph{Device Memory} support and \emph{Getting Installed Related Apps} support
 were added in Chrome~63, and \emph{Media Capabilities} in Chrome~65.
-Everything else is confirmed to be working as intended,
-as \texttt{CustomTabsIntent} is as close to the system browser as it gets,
-like outlined in \autoref{sec:background}.
+As expected, all features are confirmed to be working as intended
+due to the fact that \texttt{CustomTabsIntent} is as close to the system browser as it gets,
+as outlined in \autoref{sec:background}.
 
 Regarding \texttt{TrustedWebUtils},
 the results are exactly the same as with \texttt{CustomTabsIntent},
@@ -794,13 +831,16 @@ and sets a~special flag called \texttt{EXTRA\_LAUNCH\_AS\_TRUSTED\_WEB\_ACTIVITY
 
 \subsection{i\textsc{os}}
 
-We have run \textsc{pwa} Feature Detector on Beta versions of i\textsc{os}~11.3,
+We have run \textsc{pwa} Feature Detector on an iPhone~\textsc{x}
+with Beta versions of i\textsc{os}~11.3,
 the first operating system by Apple that ships with a~\textsc{pwa}-capable browser.
+Unlike with Android, on i\textsc{os} the browser is tied to the operating system.
 Table~\ref{table:safari} shows the very limited set of \textsc{pwa} features
 that are available so far on \texttt{WKWebView} and \texttt{SFSafariViewController}.
-Albeit Apple made no official announcement of the newly-gained Service Worker support,
+Albeit Apple made no official announcement about Service Worker support in the release notes,
 Safari Engineer Mondello's tweet~\cite{mondello2018safari} was widely shared and favorited,
-proving how eagerly awaited Apple's buy-in was in the broader \textsc{pwa} community.
+serving as a~proof point as to how eagerly awaited Apple's support and buy-in
+was in the broader \textsc{pwa} community.
 
 \paragraph{\textsc{pwa} Features Reported to Be Working}
 
@@ -821,53 +861,45 @@ proving how eagerly awaited Apple's buy-in was in the broader \textsc{pwa} commu
     method always returns a~negative result.
 \end{description} 
 
-\paragraph{\textsc{pwa} Features Reported Not to Be Working}
+\paragraph{\textsc{pwa} Features Reported Not to Be Working} \leavevmode \newline
 
-All other \textsc{pwa} features are supposed and confirmed not to be working.
+All other \textsc{pwa} features are currently supposed and confirmed not to be working.
+As typical for Apple, no future plans on supporting more features are known.
+The WebKit Feature Status page shows the Web Share \textsc{api}~\cite{giuca2017webshare}
+and the Credential Management \textsc{api}~\cite{west2017credentialmanagement}
+as ``Under Consideration'',\footnote{\url{https://webkit.org/status/}}
+but no estimated time of arrival is confirmed.
+That being said, Service Workers had the same status.
 
-\begin{figure}[h]
-  \centering
-  \begin{subfigure}[t]{0.475\columnwidth}
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-wechat-android-chrome65}
-    \caption[\textsc{pwa} Feature Detector running in WeChat.]{
-      In WeChat in a~Chrome~65 based \texttt{WebView}.}
-    \label{fig:wechat-android-chrome65}
-  \end{subfigure}    
-  \quad
-  \begin{subfigure}[t]{0.475\columnwidth}  
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-android-chrome65}
-    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-      In Twitter in a~Chrome~65 based \texttt{CustomTabsIntent}.}
-    \label{fig:twitter-android-chrome65}
-  \end{subfigure}
-  \caption{\textsc{pwa} Feature Detector running on Android~8.1.99.}    
-\end{figure}
+\subsection{Summary of the Results}
 
-\begin{figure}[h]
-  \centering
-  \begin{subfigure}[t]{0.475\columnwidth}
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-facebook-ios-safari11_1}
-    \caption[\textsc{pwa} Feature Detector running in Facebook.]{
-      In Facebook in a~Safari~11.1 based \texttt{WKWebView}.}
-    \label{fig:facebook-ios-safari11_1}
-  \end{subfigure}    
-  \quad
-  \begin{subfigure}[t]{0.475\columnwidth}  
-    \includegraphics[width=1\columnwidth,frame]{pwa-feature-detector-twitter-ios-safari11_1}
-    \caption[\textsc{pwa} Feature Detector running in Twitter.]{
-      In Twitter in a~Safari~11.1 based \texttt{SFSafariViewController}.}
-    \label{fig:twitter-ios-safari11_1}
-  \end{subfigure} 
-  \caption{\textsc{pwa} Feature Detector running on i\textsc{os}~11.3 Beta~1.}       
-\end{figure}
+What can be observed on both platforms, Android and i\textsc{os},
+is a~dissatisfying inaccuracy of the feature tests,
+especially on \texttt{WebView} and \texttt{WKWebView}.
+The situation is better on the browser tab experiences
+\texttt{CustomTabsIntent} and \texttt{SFSafariViewController}
+and all reported to work features indeed work---with
+the exception of \emph{Add to Home Screen}, which is non-deterministic.
+On the former two, \texttt{WebView} and \texttt{WKWebView},
+the pure \emph{presence} of an \textsc{api} object or method
+does not necessarily guarantee that the feature will then actually work.
+In the opposite direction, at least the \emph{absence}
+of an \textsc{api} object or method ensures that the feature does not work.
+
+In summary, on Android, the only features that at time of writing
+are reliably supported in \texttt{WebView}
+are \emph{Offline Capabilities}, \emph{Navigation Preload}, \emph{Storage Estimation},
+and \emph{Device Memory}.
+On i\textsc{os}, the only reliably available feature on \texttt{WKWebView}
+is \emph{Offline Capabilities}.
 
 \section{Future Work}
 \label{sec:future-work}
 
-Future work will cover two aspects:
-we look at it from the point of view of app developers
+Future work will cover two angles:
+we look at potential research directions from the point of view of app developers
 programming \textsc{pwa}s for Web Views,
-as well as from the angle of a~browser vendor.
+and from the perspective of a~browser vendor.
 
 \subsection{Improving Feature Tests}
 
@@ -879,43 +911,60 @@ rather than just testing for its existence is prohibitive.
 We have seen that no-op or dummy methods like with \emph{Silent Push},
 where \texttt{navigator.budget.reserve} just did nothing,
 or with \emph{Persistent Storage}, 
-where the method \texttt{navigator.storage.persist} always returned a~negative response
+where the method \texttt{navigator.storage.persist} always returned a~negative response,
 can be the reason for unexpected results.
-In an ideal world, existence tests should just be good enough,
+In an ideal world, existence tests should just be satisfactory and return reliable results,
 which requires catching involuntarily exposed interfaces.
 Chromium bug \url{https://crbug.com/787868} has as an objective
 to automatically identify such cases.
 
-\subsection{Polyfilling Missing \textsc{api}s in \texttt{WebView}s}
+\subsection{Polyfilling New \textsc{api}s in \texttt{WebView} \& \texttt{WKWebView}}
 
-While generally \texttt{CustomTabsIntent} is the Web View of choice,
-there may be reasons where app developers are stuck with \texttt{WebView}.
+While generally if apps let users view websites from anywhere on the Internet
+\texttt{CustomTabsIntent} and \texttt{SFSafariViewController}
+are the recommended Web Views of choice~\cite{apple2018sfsafariviewcontroller,kinlan2016customtabs},
+there may well be reasons where app developers might prefer \texttt{WebView}
+or \texttt{WKWebView} respectively.
+One such reason is wanting to extend the functionality of browsers with polyfills.
 A~\emph{polyfill} is code that implements a~feature on Web browsers
 that do not support the feature.
-The \texttt{WebView.evaluateJavascript} method allows JavaScript code to be 
+The two corresponding methods \texttt{WebView.evaluateJavascript} and \texttt{WKWebView.evaluateJavaScript}
+allow JavaScript code to be 
 asynchronously evaluated in the context of the currently displayed page.
 For app developers, this can help improve
 the \textsc{pwa} support situation for some \textsc{api}s
 that can, at least to some extent, be polyfilled.
-One example might be \emph{Push Notifications},
+This technique has been successfully applied by the Chrome for i\textsc{os} team,
+when they added Payment Request \textsc{api} support to the browser~\cite{leenheer2017paymentrequest}
+before official support landed.
+Another example might be \emph{Push Notifications},
 albeit polyfills like \texttt{notification.js}\footnote{\url{https://adodson.com/notification.js/}} 
 can acknowledgedly only partially work due to technical constraints.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
-In this paper, we have first provided the technical background on Web Views
+In this paper, after introducing the concept and history of Progressive Web Apps,
+we have first provided the technical background on Web Views
 on both Android and i\textsc{os}.
 Second, we have defined a~number of \textsc{pwa} features
 and documented and implemented tests for detecting them
 in the open source app \textsc{pwa} Feature Detector. 
 In continuation, we have evaluated the approach on a~great variety of devices
-with different versions of operating systems, Web Views,
-and applications with in-app browser.
-We have identified a~number of issues with these feature tests,
-and have collected various interfaces that are exposed erroneously in browsers.
+with diverse versions of operating systems, different Web Views,
+and multiple applications with in-app browsers.
+We have identified a~number of issues with these feature tests
+and have collected various features that are erroneously exposed in browsers,
+leading to the final set of reliably supported \textsc{pwa} features.
 
-\todo{Write Conclusions}
+Concluding, we find that the best Web View technology for building feature-rich
+\textsc{pwa}s is \texttt{CustomTabsIntent} (including Trusted Web Activity) on Android,
+and---despite it being early days for Service Workers on i\textsc{os}
+at all---\texttt{SFSafariViewController}.
+If one is bound to \texttt{WebView} on Android or \texttt{WKWebView} on i\textsc{os},
+at least \emph{Offline Capabilities} are reliably supported across operating systems,
+which already has significant potential to make a~big performance difference
+for repeat visits and enable entirely new offline scenarios.
 
 \section*{Acknowledgements}
 
