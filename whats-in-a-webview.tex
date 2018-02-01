@@ -144,13 +144,13 @@ Such in-app browsers can commonly be encountered in chat applications like WeCha
 online social networks like Facebook or Twitter, but also email clients like Gmail,
 or simply anywhere where Web content is displayed inside native apps.
 We have developed an open-source application called \emph{\textsc{pwa} Feature Detector}
-that allows for easily testing in-app browsers (and naturally stand-alone browsers as well),
+that allows for easily testing in-app browsers (and naturally stand-alone browsers),
 and have evaluated the level of support for \textsc{pwa} features
 on different devices and Web Views.
 On the one hand, our results show that there are big differences
 between the various Web View technologies
 and the browser engines they are based upon,
-but on the other hand, that the results
+but on the other hand, that for Android the results
 are independent from the devices' operating systems,
 which is good news given the problematic update policy of many device manufacturers.
 These findings help developers make educated choices when it comes to determining
@@ -173,7 +173,7 @@ In recent years, there has been a~paradigm shift
 from browser to native apps and back to browser again.
 The Web currently is undergoing a silent revolution with Web apps,
 more descriptively \emph{Progressive Web Apps},
-or for short just \textsc{pwa}s.
+or for short just \textsc{pwa}.
 How did we get there?
 
 \subsection{History of Progressive Web Apps}
@@ -181,7 +181,7 @@ How did we get there?
 Since around 2005, Web development has moved from static multi-page \emph{documents}
 to single-page \emph{applications}, heavily enabled by the \texttt{XMLHttpRequest} \textsc{api},
 a~process that eventually led Garrett to coin the term \emph{Ajax}
-(Asynchronous JavaScript and XML~\cite{garret2005ajax}) to describe this shift.
+(Asynchronous JavaScript and \textsc{xml}~\cite{garret2005ajax}) to describe this shift.
 Despite an early push for Web-based apps on devices such as the 2007 iPhone,
 attempts at Web apps mostly failed by comparison to native apps
 that are distributed through app stores rather than the Web.
@@ -189,14 +189,14 @@ Native apps not only had direct hardware access to, \emph{e.g.},\ camera and mic
 to various sensors like accelerometer or geolocation, but also just in general provided
 a~better user experience and booted faster, compared to having to load in a~browser at runtime.
 Additionally, advanced offline support and push notifications were simply unthinkable
-for Web applications of the epoch, and Web app icons
-that already could be added to devices' home screens
-were mostly just bookmarks with---apart from full screen mode---no special behavior.
+for Web applications of the epoch, and Web app icons---that
+already could be added to devices' home screens---were
+mostly just bookmarks with---apart from full screen mode---no special behavior.
 While straightforward offline scenarios could be realized with
 \texttt{AppCache}~\cite{vankesteren2008offlinewebapps}, more complex offline scenarios were error-prone
 and hard to get right~\cite{archibald2012douchebag}.
 
-As the Web platform matured and more and more
+As the Web platform matured, and more and more
 hardware-related \textsc{api}s were implemented in browsers,
 in the end it was the addition of Service Workers~\cite{russell2017serviceworkers}
 to the Chromium browser in 2014~\cite{cooney2014chromium} that started to unlock a~new class of Web apps
@@ -222,7 +222,7 @@ running in the Google Chrome browser on Android.
     at the example of Flipkart (\url{https://www.flipkart.com}):
     \emph{(i)}~add to home screen prompt, \emph{(ii)}~icon on the home screen
     \emph{(iii)}~splash screen while launching,
-    \emph{(iv)}~launched in full screen without \textsc{url} bar, and
+    \emph{(iv)}~launched in full screen mode without \textsc{url} bar, and
     \emph{(v)}~signaling offline state.}
   \label{fig:pwa-features}
 \end{figure}
@@ -236,11 +236,14 @@ but through \emph{in-app browsers} that render Web content in the context of nat
 Examples of such applications with in-app browsers are chat apps like WeChat (Wēixìn) or WhatsApp,
 online social networks like Facebook or Twitter, but also email clients like Gmail,
 or simply anywhere where Web content is displayed inside native apps.
-The technology that these applications leverage internally are so-called \emph{Web Views}.
+The technology that these applications leverage internally are so-called
+\emph{Web Views}.\footnote{We differentiate the general concept of \emph{Web View}
+from the Android class \texttt{WebView}.}
 In order to understand why this presents an interesting research problem,
 one needs to first understand the role that applications like WeChat
 and thus Web Views play in markets like China.
-Chan writes in an article~\cite{chan2015wechat} for the venture capital firm Andreessen Horowitz:
+Chan writes in an article~\cite{chan2015wechat}
+for the venture capital firm Andreessen Horowitz (emphasis ours):
 ``Millions (note, not just thousands) of lightweight apps live inside WeChat,
 much like webpages live on the internet.
 \emph{This makes WeChat more like a~browser for mobile websites}, or, arguably,
@@ -263,13 +266,13 @@ corporate accounts and an immense collection of WeChat accounts
 which are used by newspapers and independent bloggers''.
 While personally we do not embrace this development
 and are advocates of the open Web,
-we nevertheless examine the implications of an in-app closed Web experience
+we nevertheless examine implications of an in-app closed Web experience
 and its impact on \textsc{pwa}s. 
 
 In the remainder of this paper, we first look at the technical background of Web Views
 on both Android and i\textsc{os} in \autoref{sec:background}.
 We then describe the examined \textsc{pwa} features and their underlying \textsc{api}s
-in \autoref{sec:pwa-feature-detector}, in which we also introduce
+in \autoref{sec:pwa-feature-detector}, wherein we also introduce
 our application \emph{\textsc{pwa} Feature Detector}.
 In continuation, we present and discuss our results in \autoref{sec:results-and-discussion}.
 We close the paper with an outlook on future work in \autoref{sec:future-work}
@@ -278,11 +281,11 @@ and draw our conclusions in \autoref{sec:conclusions}.
 \section{Background on Web Views}
 \label{sec:background}
 
-There are several different ways to integrate Web content in native applications,
+There are different ways to integrate Web content in native applications,
 each having their own benefits and drawbacks.
 In the following, we describe the options on the two popular
 mobile operating system Android and i\textsc{os}.
-While Android had enjoyed Service Worker support for as long as 2014~\cite{cooney2014chromium},
+While Android browsers have enjoyed Service Worker support since 2014~\cite{cooney2014chromium},
 at time of writing (February 2018), Safari on i\textsc{os}
 for the first time supported Service Workers
 in Beta versions of i\textsc{os}~11.3~\cite{mondello2018safari}.
@@ -390,9 +393,9 @@ which enables apps to delegate the responsibility of showing Web content to Safa
 avoiding the need to write custom code for built-in browsers.
 Up until i\textsc{os}~10, \texttt{SFSafariViewController}
 shared cookies and website data with Safari,
-which means that if a~user was already logged in to a~specific website in Safari
+which means that if users were already logged in to a~given website in Safari
 and a~link to that website was opened in \texttt{SFSafariViewController},
-the user was already logged in.
+they did not have to log in again.
 As of i\textsc{os}~11, cookie and website data is no longer shared automatically,
 but developers can on an as-needed basis leverage
 an \texttt{SFAuthenticationSession}~\cite{apple2018sfauthenticationsession}
@@ -402,7 +405,7 @@ that shares data upon user consent.
 
 The development on the two operating systems has clear parallelisms
 that can be summarized as follows.
-From the initially slow and gradually improved simple Web Views \texttt{WebView}
+From initially slow, gradually improved simple Web Views, namely \texttt{WebView}
 (with the transparent internal switch from WebKit to Chromium)
 on Android and \texttt{UIWebView} and \texttt{WKWebView} on i\textsc{os},
 there was an evolution to more powerful and better integrated browser tab experiences,
@@ -418,13 +421,13 @@ Solely Android's Trusted Web Activity so far has no i\textsc{os} equivalent yet.
 
 What exactly makes a~Web app a~\emph{Progressive} Web App is not clearly defined.
 One of the most open definitions comes from Samsung~\cite{samsung2017pwa},
-maker of the Samsung Internet browser:
+maker of the Samsung Internet browser (emphasis ours):
 ``Progressive Web Apps (\textsc{pwa}s) are regular mobile and desktop web applications
 that are accessible in any web browser.
 In browsers that support new open web standards [\ldots]
 they \emph{can} provide additional capabilities
-including offline support and push notifications'' (emphasis ours).
-However, just like with Ajax~\cite{garret2005ajax}, the term \textsc{pwa}
+including offline support and push notifications''.
+Just like with Ajax~\cite{garret2005ajax}, the term \textsc{pwa}
 became a~catch-all umbrella brand for Web apps
 that in some way or the other use Service Worker \textsc{api}s,
 feel (native) ``app-like,'' use latest browser features if they are available
@@ -441,7 +444,7 @@ Apps on the homescreen:
 \begin{itemize}
   \item Should load instantly, regardless of network state.
     [T]hey [don't] need to function fully offline,
-    but they must put their own UI on screen without requiring a network round trip.
+    but they must put their own \textsc{ui} on screen without requiring a network round trip.
   \item Should be tied in the user's mind to where they came from.
     The brand or site behind the app shouldn't be a mystery.
   \item Can run without extra browser chrome (\emph{e.g.},\ the \textsc{url} bar).
@@ -486,7 +489,8 @@ and then try to register a~Service Worker, as outlined in \autoref{code:sw-suppo
   \itemsep0em 
   \item[Offline Capabilities] The ability to still load and work
     at least to some extent, even when the device is offline~\cite{russell2017serviceworkers},
-    for example, when airplane mode is on or when the device temporarily has no network coverage.
+    for example, when the so-called airplane mode is activated
+    or when the device temporarily has no network coverage.
   \item[Push Notifications] The capability to display push notifications as defined in
     the Push \textsc{api}~\cite{beverloo2017pushapi}, for example,
     to point users to fresh content, even when the app is not running.
@@ -519,7 +523,7 @@ and then try to register a~Service Worker, as outlined in \autoref{code:sw-suppo
     as defined in the Media Session standard~\cite{lamouri2017mediasessionapi}.
   \item[Media Capabilities] The ability to make an optimal decision
     when picking media content for the user by exposing information
-    about the decoding and encoding capabilities for a given format,
+    about the decoding and encoding capabilities for a~given format,
     but also output capabilities to find the best match based on the device's display
     as defined in the Media Capabilities standard~\cite{lamouri2017mediacapabilities}.
   \item[Device Memory] The capability to read the amount of available
@@ -528,7 +532,8 @@ and then try to register a~Service Worker, as outlined in \autoref{code:sw-suppo
     based on the built-in memory~\cite{panicker2017devicememory}.
   \item[Getting Installed Related Apps] The capability to detect if a~corresponding
     native application is installed alongside the \textsc{pwa} in order to,
-    for example, not show push notifications twice on both apps~\cite{kinlan2017relatedapps}.
+    for example, avoid showing push notifications twice
+    on both the native app and the \textsc{pwa}~\cite{kinlan2017relatedapps}.
   \item[Payment Request] The capability to act as intermediary among merchants,
     users, and payment methods by means of a~standardized payment communication flow
     that supports different secure payment methods~\cite{bateman2017paymentrequest}.
@@ -549,9 +554,9 @@ It is distinct from \emph{browser sniffing}, where based on the user agent strin
 assumptions are being made regarding feature support,
 which is generally considered problematic and bad practice~\cite{andersen2008useragent}.
 \autoref{code:feature-detection} shows the tests
-we run in order to detect the features listed in the previous subsection.
+we run in order to detect the \textsc{pwa} features listed in the previous subsection.
 As outlined before, a~\texttt{ServiceWorkerRegistration},
-\emph{i.e.},\ an active Service Worker is a~prerequisite for all tests.  
+\emph{i.e.},\ an active Service Worker, is a~prerequisite for all tests.  
 The variables \texttt{nav} for \texttt{navigator},
 \texttt{win} for \texttt{window}, \texttt{doc} for \texttt{document},
 \texttt{reg} for \texttt{ServiceWorkerRegistration}
@@ -633,11 +638,11 @@ displays Web content in a~\texttt{CustomTabsIntent}.
 Despite the exact same underlying browser engine (Chrome/65.0.3310.3),
 the \texttt{CustomTabsIntent}-based in-app browser
 clearly wins the \textsc{pwa} feature competition.
-For non-domain experts we note that on Android the \texttt{WebView}
+For non-domain experts we note that on Android \texttt{WebView}s
 can be easily spotted by looking for the string
 ``wv'' in the displayed user agent~\cite{chrome2018useragent}.
 The corresponding i\textsc{os} screenshots, likewise
-based on the same underlying browser engine (Safari~11.1),
+based on the same underlying browser engine (Safari~11.1) on the same device,
 can be seen in \autoref{fig:facebook-ios-safari11_1} with a~\texttt{WKWebView} displayed in Facebook 
 and in \autoref{fig:twitter-ios-safari11_1} with an \texttt{SFSafariViewController}
 displayed in Twitter.
@@ -654,17 +659,17 @@ We covered everything from Android~6 (``Marshmallow''),
 to Android~7 (``Nougat''),
 to the (at time of writing) most up-to-date Android~8 (``Oreo''). 
 For the browser engines, we had devices running Chrome~53, 55, 57, 59, 61, 63, and 65.
+\autoref{fig:indexsheet} shows screenshots of all tested devices.
 The popularity of WeChat~\cite{chan2015wechat} in China clearly was reflected 
 in the applications with in-app browsers that we covered.
-We had WeChat (that identifies itself as ``MicroMessenger'' in user agent strings),
+We observed WeChat (that identifies itself as ``MicroMessenger'' in user agent strings),
 Sina Weibo, Facebook, Facebook Messenger, and Twitter.
 Table~\ref{table:webview} shows our results for in-app browsers based on
 \texttt{WebView}, Table~\ref{table:customtab} shows the results for
 \texttt{CustomTabsIntent}.
-\autoref{fig:indexsheet} shows screenshots of all tested devices.
 The results in both tables are primarily ordered by browser engine version
 and secondarily ordered by Android version.
-As can be seen, the Android version has no impact
+As the tables show, the Android version has no impact
 on the set of supported \textsc{pwa} features,
 which makes sense given the technical background information
 in \autoref{sec:background} regarding the decoupling of operating system version
@@ -707,15 +712,15 @@ and \texttt{WebView} version.
   \end{center}
 \end{figure}
 
-\paragraph{Discussion of the \texttt{WebView} Results}
+\paragraph{\textbf{Discussion of \texttt{WebView} Results}}
 
 Table~\ref{table:webview} unsurprisingly shows that the more mature
 the underlying browser engine gets, the more \textsc{pwa} features become available.
-We can see that the \textsc{pwa} features which---according to the feature detection tests
+We see that \textsc{pwa} features that---according to the feature detection tests
 from~\autoref{code:feature-detection}---were reported to be working
 from the earliest examined browser engine on are \emph{Offline Capabilities},
 \emph{Background Sync}, \emph{Credential Management}, and \emph{Add to Home Screen}.
-However, we need to have a~closer look at the results.
+However, we need to have a~closer look.
 
 \paragraph{\textsc{pwa} Features Reported to Be Working}
 
@@ -728,14 +733,14 @@ However, we need to have a~closer look at the results.
      which is tracked in Chromium bug \url{https://crbug.com/589829}.    
   \item[Add to Home Screen] While in theory supported from the start,
     the situation with \emph{Add to Home Screen} is blurry.
-    First, the criteria for \emph{when exactly} the prompt actually triggers
+    First, the criteria for \emph{when exactly} the install prompt actually triggers
     are not exposed publicly. The conditions listed in~\cite{kinlan2017a2hs} are necessary,
     but not sufficient.
     What the feature test does is check if the browser supports the \texttt{onbeforeinstallprompt} event
     that fires just before a~potential install prompt would be shown,
     and whether it knows how to deal
     with a~Web App Manifest.
-    However, if it then actually shows a~prompt
+    However, if the browser then actually shows a~prompt
     is left to browser implementers~\cite{caceres2017manifest}.
   \item[Background Sync] While in theory supported from the start,
     \emph{Background Sync} exists, but fails upon trying to use it.
@@ -743,19 +748,19 @@ However, we need to have a~closer look at the results.
   \item[Persistent Storage] Chrome~55 added support for
      \emph{Persistent Storage}~\cite{vankesteren2018storage},
      but while the \texttt{navigator.storage.persist} method exists and can be called,
-     the result is always negative, so data is actually never persisted.
+     the result is always negative, which means data actually never can be persisted.
   \item[Navigation Preload] The feature \emph{Navigation Preload}, added in Chrome~59
     is working as expected.
   \item[Silent Push] \emph{Silent Push}, added in Chrome~61 has a~method
     \texttt{navigator.budget.reserve} that returns nothing, where a~boolean value is expected.
-    Like \emph{Push Notifications} it is not supposed to work.
+    Like user-visible \emph{Push Notifications}, it is not supposed to work.
   \item[Storage Estimation] The feature \emph{Storage Estimation}, added in Chrome~61,
     is working as expected.
   \item[Device Memory] The feature \emph{Device Memory}, added in Chrome version~63, 
     is working as intended.
   \item[Web Share] The \emph{Web Share} feature, introduced in Chrome~61,
-    was for this one version of Chrome reported to be working, but fixed
-    to be no longer exposed in the browser via Chromium bug \url{https://crbug.com/765923}.
+    was for the one version of Chrome~61 reported to be working, but the issue got fixed
+    in Chromium bug \url{https://crbug.com/765923} and the feature is no longer exposed in the browser .
 \end{description} 
 
 \paragraph{\textsc{pwa} Features Reported Not to Be Working}
@@ -773,11 +778,11 @@ However, we need to have a~closer look at the results.
     is supposed and confirmed not to be working.
 \end{description} 
 
-\paragraph{Discussion of the \texttt{CustomTabsIntent} Results}
+\paragraph{\textbf{Discussion of \texttt{CustomTabsIntent} and \texttt{TrustedWebUtils} Results}}
 
 The results in Table~\ref{table:customtab} present no surprises. 
-We can see \emph{Device Memory} support and \emph{Getting Installed Related Apps} support
-be added in Chrome~63, and \emph{Media Capabilities} in Chrome~65.
+We can see that \emph{Device Memory} support and \emph{Getting Installed Related Apps} support
+were added in Chrome~63, and \emph{Media Capabilities} in Chrome~65.
 Everything else is confirmed to be working as intended,
 as \texttt{CustomTabsIntent} is as close to the system browser as it gets,
 like outlined in \autoref{sec:background}.
