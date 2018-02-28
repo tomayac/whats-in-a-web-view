@@ -1530,7 +1530,7 @@ Computing Machinery]
    disseminate the work on their personal and corporate Web sites with
    the appropriate attribution. In case of republication, reuse, etc.,
    the following attribution should be used: ``Published in
-   WWW\@acmYear{} Proceedings \textcopyright{} \@copyrightyear
+   WWW\@acmYear{} Proceedings \textcopyright{} \@copyrightyear{}
    International World Wide Web Conference Committee, published under
    Creative Commons CC~BY-NC-ND~4.0 License.''
  \fi}
