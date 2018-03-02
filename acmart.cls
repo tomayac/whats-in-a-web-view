@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{acmart}
-[2017/12/14 v1.48 Typesetting articles for the Association for
+[2018/02/07 v1.50 Typesetting articles for the Association for
 Computing Machinery]
 \def\@classname{acmart}
 \InputIfFileExists{acmart-preload-hook.tex}{%
@@ -777,6 +777,7 @@ Computing Machinery]
 \define@choicekey*+{ACM}{acmJournal}[\@journalCode\@journalCode@nr]{%
   CIE,%
   CSUR,%
+  DTRAP,%
   IMWUT,%
   JACM,%
   JDIQ,%
@@ -837,6 +838,10 @@ Computing Machinery]
   \def\@journalName{ACM Computing Surveys}%
   \def\@journalNameShort{ACM Comput. Surv.}%
   \def\@permissionCodeOne{0360-0300}%
+\or % DTRAP
+  \def\@journalName{Digital Threats: Research and Practice}%
+  \def\@journalNameShort{Digit. Threat. Res. Pract.}%
+  \def\@permissionCodeOne{2576-5337}%
 \or % IMWUT
   \def\@journalName{Proceedings of the ACM on Interactive, Mobile,
     Wearable and Ubiquitous Technologies}%
@@ -1518,21 +1523,13 @@ Computing Machinery]
    This paper is published under the Creative Commons Attribution~4.0
    International (CC~BY~4.0) license. Authors reserve their rights to
    disseminate the work on their personal and corporate Web sites with
-   the appropriate attribution. In case of republication, reuse, etc.,
-   the following attribution should be used: ``Published in
-   WWW\@acmYear{} Proceedings \textcopyright{} \@copyrightyear{}
-   International World Wide Web Conference Committee, published under
-   Creative Commons~CC~BY~4.0  License.''
+   the appropriate attribution.
  \or % iw3c2w3g
    This paper is published under the Creative Commons
    Attribution-NonCommercial-NoDerivs~4.0 International
    (CC~BY-NC-ND~4.0) license. Authors reserve their rights to
    disseminate the work on their personal and corporate Web sites with
-   the appropriate attribution. In case of republication, reuse, etc.,
-   the following attribution should be used: ``Published in
-   WWW\@acmYear{} Proceedings \textcopyright{} \@copyrightyear{}
-   International World Wide Web Conference Committee, published under
-   Creative Commons CC~BY-NC-ND~4.0 License.''
+   the appropriate attribution.
  \fi}
 \def\copyrightyear#1{\def\@copyrightyear{#1}}
 \copyrightyear{\@acmYear}
